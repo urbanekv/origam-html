@@ -46,6 +46,7 @@ export const WebScreen: React.FC<{
 
   const refIFrame = useCallback((elm: any) => {
     props.refIFrame && props.refIFrame(elm);
+    elm.contentWindow.location.reload();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
