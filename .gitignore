@@ -41,3 +41,4 @@ src/.ionide/symbolCache.db
 
 
 *.zip
+/tests_e2e/__image_snapshots__/
