@@ -345,7 +345,7 @@ export class CDataViewHeaderInner extends React.Component<{
                           <DataViewHeaderGroup noShrink={true}>
                             {isAddButton && (
                               <DataViewHeaderAction
-                                className={crudButtonsEnabled ? "isGreenHover" : ""}
+                                className={"addRow "+(crudButtonsEnabled ? "isGreenHover" : "")}
                                 onClick={onCreateRowClickEvt}
                                 onShortcut={onCreateRowClickEvt}
                                 isDisabled={!crudButtonsEnabled}

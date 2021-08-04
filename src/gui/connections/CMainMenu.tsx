@@ -132,6 +132,7 @@ class CMainMenuCommandItem extends React.Component<{
             refDom={refTrigger}
             level={props.level}
             isActive={false}
+            id={"menu_"+props.node.attributes.id}
             icon={
               <Icon
                 src={getIconUrl(
@@ -290,6 +291,7 @@ class CMainMenuFolderItem extends React.Component<{
           level={props.level}
           isActive={false}
           icon={this.icon}
+          id={"menu_"+props.node.attributes.id}
           label={props.node.attributes.label}
           isHidden={!props.isOpen}
           onClick={this.handleClick}
