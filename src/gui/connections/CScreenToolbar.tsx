@@ -214,6 +214,7 @@ export class CScreenToolbar extends React.Component<{}> {
                   className={isDirty ? "isRed isHoverGreen" : ""}
                   onClick={onSaveSessionClick(formScreen)}
                   onShortcut={onSaveSessionClick(formScreen)}
+                  id={"saveButton"}
                   shortcutPredicate={isSaveShortcut}
                   icon={
                     <Icon
