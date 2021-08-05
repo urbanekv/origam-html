@@ -67,20 +67,21 @@ function xPathContainsClass(className){
   return `contains(concat(' ',normalize-space(@class),' '),' ${className} ')`
 }
 
-// for case when simple element.click() does not work
-// e.g. "Error: Node is detached from document"
-async function elementMouseUpDown(element){
-  const box = await element.boundingBox();
-  debugger;
-  console.log(element);
-  console.log(box);
-  const x = box.x + box.width / 2;
-  const y = box.y + box.height / 2;
-  await page.mouse.move(x, y);
-  await sleep(200);
-  await page.mouse.down();
-  await sleep(30);
-  await page.mouse.up();
+async function addRow(firstColumnValue, secondColumnValue) {
+  await page.$eval("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508 .addRow", elem => elem.click())
+  await sleep(500);
+
+  const focusedElement = await page.evaluateHandle(() => document.activeElement);
+  expect(focusedElement._remoteObject.className).toBe("HTMLInputElement");
+
+  await focusedElement.type(firstColumnValue)
+  await page.keyboard.press("Tab");
+
+  const focusedElement2 = await page.evaluateHandle(() => document.activeElement);
+  expect(focusedElement2._remoteObject.className).toBe("HTMLInputElement");
+  expect(focusedElement2).not.toBe(focusedElement);
+
+  await focusedElement2.type(secondColumnValue)
 }
 
 describe("Html client", () => {
@@ -96,22 +97,21 @@ describe("Html client", () => {
       `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
-    await sleep(500);
-    await addRowButton.click();
-    // await elementMouseUpDown(addRowButton);
-    await sleep(500);
+    // await sleep(500);
+    await addRow("str11, str12");
+    await addRow("str21, str22");
+    await addRow("str31, str32");
 
-    const focusedElement = await page.evaluateHandle(() => document.activeElement);
-    expect(focusedElement._remoteObject.className).toBe("HTMLInputElement");
+    await page.$eval("#saveButton", elem => elem .click())
+    await page.waitForSelector('#saveButton :not(.isRed)');
 
-    await focusedElement.type("bla1")
-    await page.keyboard.press("Tab");
+    // const scroller = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
+    // const scrollerImage = scroller.screenshot();
+    // expect(scrollerImage).toMatchImageSnapshot();
 
-    const focusedElement2 = await page.evaluateHandle(() => document.activeElement);
-    expect(focusedElement2._remoteObject.className).toBe("HTMLInputElement");
-    expect(focusedElement2).not.toBe(focusedElement);
+    // const image = await page.screenshot();
+    // expect(image).toMatchImageSnapshot();
 
-    await focusedElement2.type("ble1")
     console.log("Done.")
 
     // {
