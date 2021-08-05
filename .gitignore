@@ -42,3 +42,4 @@ src/.ionide/symbolCache.db
 
 *.zip
 /tests_e2e/__image_snapshots__/
+/tests_e2e/instalMouseHelper_.js

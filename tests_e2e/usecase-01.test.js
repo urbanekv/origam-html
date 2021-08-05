@@ -67,21 +67,22 @@ function xPathContainsClass(className){
   return `contains(concat(' ',normalize-space(@class),' '),' ${className} ')`
 }
 
-async function addRow(firstColumnValue, secondColumnValue) {
+async function addRowToMaster(firstColumnValue, secondColumnValue) {
+  const firstColumnEditorId = "editor_b2adeca9-7f20-410d-bbe5-fb78e29614c2";
+  const secondColumnEditorId = "editor_8b796084-3347-4ad0-8380-00a373176bb0";
+
   await page.$eval("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508 .addRow", elem => elem.click())
-  await sleep(500);
 
-  const focusedElement = await page.evaluateHandle(() => document.activeElement);
-  expect(focusedElement._remoteObject.className).toBe("HTMLInputElement");
+  await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
+  const inputCol1 = await page.$("#" + firstColumnEditorId);
+  await inputCol1.type(firstColumnValue)
 
-  await focusedElement.type(firstColumnValue)
   await page.keyboard.press("Tab");
 
-  const focusedElement2 = await page.evaluateHandle(() => document.activeElement);
-  expect(focusedElement2._remoteObject.className).toBe("HTMLInputElement");
-  expect(focusedElement2).not.toBe(focusedElement);
+  await page.waitForFunction(`document.activeElement == document.getElementById("${secondColumnEditorId}")`);
+  const inputCol2 = await page.$("#" + secondColumnEditorId);
+  await inputCol2.type(secondColumnValue)
 
-  await focusedElement2.type(secondColumnValue)
 }
 
 describe("Html client", () => {
@@ -93,14 +94,15 @@ describe("Html client", () => {
         "menu_691f8dfa-606f-46f3-9078-6891642af76e",
         "menu_12bef472-a744-4f5a-98f8-17c163137e9f"
       ]);
+
+    // Add three rows
     const addRowButton = await page.waitForXPath(
       `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
-    // await sleep(500);
-    await addRow("str11, str12");
-    await addRow("str21, str22");
-    await addRow("str31, str32");
+    await addRowToMaster("str11", "str12");
+    await addRowToMaster("str21", "str22");
+    await addRowToMaster("str31", "str32");
 
     await page.$eval("#saveButton", elem => elem .click())
     await page.waitForSelector('#saveButton :not(.isRed)');
@@ -112,39 +114,18 @@ describe("Html client", () => {
     // const image = await page.screenshot();
     // expect(image).toMatchImageSnapshot();
 
+
+    // remove the second row
+    const tableArea = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
+    const box = await tableArea.boundingBox();
+    const x = box.x + 50;
+    const y = box.y + 45;
+    await page.mouse.click(x, y)
+    await sleep(100)
+    await page.$eval("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508 .deleteRow", elem => elem.click())
+
     console.log("Done.")
 
-    // {
-    //   const dropdownBody = await page.waitForXPath(
-    //     `//div[@class='Dropdown_body']`,
-    //     { visible: true }
-    //   );
-    //   const bb = await dropdownBody.boundingBox();
-    //   const x = bb.x + bb.width / 2;
-    //   const y = bb.y + 30;
-    //   await page.mouse.move(x, y);
-    //   await page.mouse.wheel({ deltaY: 1000 });
-    //   await sleep(500);
-    //   await page.mouse.down();
-    //   await sleep(30);
-    //   await page.mouse.up();
-    // }
-    //
-    // const okButton = await page.waitForXPath(`//button[contains(., 'OK')]`, {
-    //   visible: true,
-    // });
-    // await okButton.click();
-    // await sleep(1000)
-    // const objekteTab = await page.waitForXPath(
-    //   `//div[@class='TabbedViewHandle_label' and contains(., 'Objekte')]`,
-    //   { visible: true }
-    // );
-    // await objekteTab.click();
-    // await sleep(1017)
-    // const image = await page.screenshot();
-    // expect(image).toMatchImageSnapshot();
-
-    // await sleep(1000);
-    await sleep(60 * 1000);
+    await sleep(120 * 1000);
   });
 });
