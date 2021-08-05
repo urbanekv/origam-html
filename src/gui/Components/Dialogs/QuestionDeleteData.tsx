@@ -49,6 +49,7 @@ export class QuestionDeleteData extends React.Component<{
         buttonsCenter={
           <>
             <button
+              id={"yesButton"}
               ref={this.refPrimaryBtn}
               tabIndex={0}
               autoFocus={true}
@@ -56,7 +57,11 @@ export class QuestionDeleteData extends React.Component<{
             >
               {T("Yes", "button_yes")}
             </button>
-            <button tabIndex={0} onClick={this.props.onNoClick}>
+            <button
+              id={"noButton"}
+              tabIndex={0}
+              onClick={this.props.onNoClick}
+            >
               {T("No", "button_no")}
             </button>
           </>
