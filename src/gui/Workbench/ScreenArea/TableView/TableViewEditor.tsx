@@ -108,13 +108,11 @@ export class TableViewEditor extends React.Component<{
             value={this.props.getCellValue!()}
             isReadOnly={readOnly}
             isInvalid={false}
-            isFocused={false}
             isPassword={this.props.property!.isPassword}
             maxLength={this.props.property?.maxLength}
             backgroundColor={backgroundColor}
             foregroundColor={foregroundColor}
             customNumberFormat={this.props.property!.customNumericFormat}
-            reFocuser={undefined}
             onChange={this.props.onChange}
             onKeyDown={this.props.onEditorKeyDown}
             onClick={undefined}
@@ -132,12 +130,10 @@ export class TableViewEditor extends React.Component<{
             value={this.props.getCellValue!()}
             isReadOnly={readOnly}
             isInvalid={false}
-            isFocused={false}
             isPassword={this.props.property!.isPassword}
             backgroundColor={backgroundColor}
             foregroundColor={foregroundColor}
             maxLength={this.props.property?.maxLength}
-            refocuser={undefined}
             onChange={this.props.onChange}
             onKeyDown={this.props.onEditorKeyDown}
             onClick={undefined}
@@ -159,10 +155,8 @@ export class TableViewEditor extends React.Component<{
             outputFormatToShow={this.props.property!.modelFormatterPattern}
             isReadOnly={readOnly}
             isInvalid={false}
-            isFocused={false}
             backgroundColor={backgroundColor}
             foregroundColor={foregroundColor}
-            refocuser={undefined}
             onChange={this.props.onChange}
             onClick={undefined}
             onDoubleClick={(event) => this.onDoubleClick(event)}
@@ -238,10 +232,8 @@ export class TableViewEditor extends React.Component<{
                   value={this.props.getCellValue!()}
                   isReadOnly={readOnly}
                   isInvalid={false}
-                  isFocused={false}
                   backgroundColor={backgroundColor}
                   foregroundColor={foregroundColor}
-                  refocuser={undefined}
                   onChange={this.props.onChange}
                   onKeyDown={undefined}
                   onClick={undefined}

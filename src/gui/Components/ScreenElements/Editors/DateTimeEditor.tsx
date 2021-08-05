@@ -173,7 +173,6 @@ export class DateTimeEditor extends React.Component<{
   isReadOnly?: boolean;
   isInvalid?: boolean;
   invalidMessage?: string;
-  isFocused?: boolean;
   autoFocus?: boolean;
   foregroundColor?: string;
   backgroundColor?: string;
@@ -221,7 +220,6 @@ export class DateTimeEditor extends React.Component<{
   disposers: any[] = [];
 
   componentDidMount() {
-    this.props.refocuser && this.disposers.push(this.props.refocuser(this.makeFocusedIfNeeded));
     this.makeFocusedIfNeeded();
     if (this.elmInput && this.props.subscribeToFocusManager) {
       this.props.subscribeToFocusManager(this.elmInput);
@@ -232,16 +230,8 @@ export class DateTimeEditor extends React.Component<{
     this.disposers.forEach((d) => d());
   }
 
-  componentDidUpdate(prevProps: { isFocused?: boolean; value: string | null }) {
+  componentDidUpdate(prevProps: { value: string | null }) {
     runInAction(() => {
-      if (!prevProps.isFocused && this.props.isFocused) {
-        this.makeFocusedIfNeeded();
-      }
-      /*if (prevProps.textualValue !== this.props.textualValue) {
-        this.dirtyTextualValue = undefined;
-        this.makeFocusedIfNeeded();
-      }*/
-
       if (prevProps.value !== null && this.props.value === null) {
         this.dirtyTextualValue = "";
       }
@@ -251,7 +241,7 @@ export class DateTimeEditor extends React.Component<{
   @action.bound
   makeFocusedIfNeeded() {
       setTimeout(()=>{
-          if ((this.props.autoFocus || this.props.isFocused) && this.elmInput) {
+          if ((this.props.autoFocus) && this.elmInput) {
               this.elmInput.select();
               this.elmInput.focus();
               this.elmInput.scrollLeft = 0;
