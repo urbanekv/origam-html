@@ -27,7 +27,7 @@ export class FormFocusManager {
   }
   objectMap: Map<string, IFocusAble> = new Map<string, IFocusAble>();
   focusAbleContainers: IFocusAbleObjectContainer[] = [];
-
+  private lastFocused: IFocusAble | undefined;
   constructor(public parent: any) {}
 
   subscribe(focusAbleObject: IFocusAble, name: string | undefined, tabIndex: string | undefined) {
@@ -46,7 +46,20 @@ export class FormFocusManager {
   }
 
   focus(name: string) {
-    this.focusAbleContainers.find((container) => container.name === name)?.focusAble.focus();
+    let focusAble = this.focusAbleContainers.find((container) => container.name === name)?.focusAble;
+    this.focusAndRemember(focusAble);
+  }
+
+  private focusAndRemember(focusAble: IFocusAble | undefined){
+    if(!focusAble){
+      return;
+    }
+    this.lastFocused = focusAble;
+    focusAble.focus();
+  }
+
+  refocusLast(){
+    this.lastFocused?.focus();
   }
 
   forceAutoFocus() {
@@ -57,7 +70,7 @@ export class FormFocusManager {
       return;
     }
     setTimeout(() => {
-      focusAble.focus();
+      this.focusAndRemember(focusAble);
     }, 0);
   }
 
@@ -86,7 +99,7 @@ export class FormFocusManager {
       this.focusNextInternal(focusAble, callNumber + 1);
     } else {
       setTimeout(() => {
-        focusAble.focus();
+        this.focusAndRemember(focusAble);
       });
     }
   }
@@ -102,7 +115,7 @@ export class FormFocusManager {
       this.focusPrevious(focusAble);
     } else {
       setTimeout(() => {
-        focusAble.focus();
+        this.focusAndRemember(focusAble);
       });
     }
   }
