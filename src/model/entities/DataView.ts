@@ -89,7 +89,7 @@ import {
 } from "../../utils/runInFlowWithHandler";
 import { IAggregation } from "./types/IAggregation";
 import { getConfigurationManager } from "../selectors/TablePanelView/getConfigurationManager";
-import {getGridFocusManager, GridFocusManager} from "./GridFocusManager";
+import { GridFocusManager } from "./GridFocusManager";
 
 class SavedViewState {
   constructor(public selectedRowId: string | undefined) {}
@@ -715,11 +715,6 @@ export class DataView implements IDataView {
     const self = this;
     if (!this.selectedRowId) {
       return;
-    }
-    if(!isLazyLoading(this)){
-      setTimeout(()=>{
-        getGridFocusManager(this).focusTableIfNeeded();
-      });
     }
 
     if (getFormScreenLifecycle(this).focusedDataViewId === this.id) {

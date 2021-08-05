@@ -19,6 +19,8 @@ along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 
 import { getDataView } from "../../selectors/DataView/getDataView";
 import { getTablePanelView } from "../../selectors/TablePanelView/getTablePanelView";
+import {isLazyLoading} from "../../selectors/isLazyLoading";
+import {getGridFocusManager} from "../../entities/GridFocusManager";
 
 export function selectFirstRow(ctx: any) {
   return function* selectFirstRow() {
@@ -26,6 +28,11 @@ export function selectFirstRow(ctx: any) {
     if(dataView.infiniteScrollLoader) yield* dataView.infiniteScrollLoader!.loadFirstPage();
     dataView.selectFirstRow();
     getTablePanelView(ctx).scrollToCurrentRow();
+    if(!isLazyLoading(ctx)){
+      setTimeout(()=>{
+        getGridFocusManager(ctx).focusTableIfNeeded();
+      });
+    }
   };
 }
 

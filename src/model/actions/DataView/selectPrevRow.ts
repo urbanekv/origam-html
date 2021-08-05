@@ -19,10 +19,17 @@ along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 
 import {getDataView} from "model/selectors/DataView/getDataView";
 import {getTablePanelView} from "../../selectors/TablePanelView/getTablePanelView";
+import {isLazyLoading} from "../../selectors/isLazyLoading";
+import {getGridFocusManager} from "../../entities/GridFocusManager";
 
 export function selectPrevRow(ctx: any) {
   return function* selectPrevRow() {
     getDataView(ctx).selectPrevRow();
     getTablePanelView(ctx).scrollToCurrentRow();
+    if(!isLazyLoading(ctx)){
+      setTimeout(()=>{
+        getGridFocusManager(ctx).focusTableIfNeeded();
+      });
+    }
   };
 }
