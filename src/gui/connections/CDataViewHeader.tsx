@@ -357,7 +357,7 @@ export class CDataViewHeaderInner extends React.Component<{
 
                             {isDelButton && !!selectedRow && (
                               <DataViewHeaderAction
-                                className="isRedHover"
+                                className="deleteRow isRedHover"
                                 onMouseDown={onDeleteRowClickEvt}
                                 onShortcut={onDeleteRowClickEvt}
                                 shortcutPredicate={isDeleteRecordShortcut}
