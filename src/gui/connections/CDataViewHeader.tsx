@@ -426,7 +426,7 @@ export class CDataViewHeaderInner extends React.Component<{
                                 </DataViewHeaderAction>
                               </DataViewHeaderGroup>
 
-                              <DataViewHeaderGroup noShrink={true}>
+                              <DataViewHeaderGroup noShrink={true} className={"rowCount"}>
                                 {this.renderRowCount()}
                               </DataViewHeaderGroup>
                             </>

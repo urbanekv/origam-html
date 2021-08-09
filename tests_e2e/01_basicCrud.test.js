@@ -103,6 +103,18 @@ async function addRowToDetail(detailValue) {
   await inputCol1.type(detailValue);
 }
 
+async function getRowCountData(dataViewId) {
+  const rowCountElement = await page.$(`#${dataViewId} .rowCount`);
+  let rowCountText = await page.evaluate(x => x.textContent, rowCountElement);
+  const rowCountData = rowCountText
+    .split("/")
+    .map(x => x.trim())
+    .filter(x=> x !== "");
+  return {
+    rowCount: rowCountData[1],
+    selectedRow: rowCountData[0]};
+}
+
 async function refreshAndThrowChangesAway() {
   await page.$eval("#refreshButton", elem => elem.click())
 
@@ -111,6 +123,28 @@ async function refreshAndThrowChangesAway() {
     {visible: true}
   );
   await dontSaveButton.click();
+
+  const detailTabHandle = await page.$(`#${detailTabHandelId}`);
+  await detailTabHandle.click();
+
+  await sleep(500);
+  const detailRowCountData = await getRowCountData(detailDataViewId);
+  expect(detailRowCountData.selectedRow).toBe("-");
+  expect(detailRowCountData.rowCount).toBe("0");
+
+  const masterRowCountData = await getRowCountData(masterDataViewId);
+  expect(masterRowCountData.selectedRow).toBe("-");
+  expect(masterRowCountData.rowCount).toBe("0");
+}
+
+async function selectMasterRow(rowIndex) {
+  const rowHeight = 30;
+  const tableArea = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
+  const box = await tableArea.boundingBox();
+  await page.mouse.click(
+    box.x + 50,
+    box.y + rowHeight / 2 + rowHeight * rowIndex
+  );
 }
 
 describe("Html client", () => {
