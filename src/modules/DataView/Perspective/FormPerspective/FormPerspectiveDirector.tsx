@@ -73,6 +73,7 @@ export class FormPerspectiveDirector implements IIId {
         <Observer key={this.$iid}>
           {() => (
             <DataViewHeaderAction
+              className={"formPerspectiveButton"}
               onMouseDown={()=> this.formPerspective.handleClick({saveNewState: true})}
               isActive={this.formPerspective.isActive}
             >

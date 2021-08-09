@@ -65,6 +65,7 @@ export class TablePerspectiveDirector implements IIId {
         <Observer key={this.$iid}>
           {() => (
             <DataViewHeaderAction
+              className={"tablePerspectiveButton"}
               onMouseDown={flow(this.tablePerspective.handleToolbarBtnClick)}
               isActive={this.tablePerspective.isActive}
             >
