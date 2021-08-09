@@ -50,6 +50,7 @@ async function login() {
   const loginButton = await page.waitForXPath(`//a[@id='loginButton']`, {
     visible: true,
   });
+  await sleep(500); // give the translations some time to load
   await loginButton.click();
 }
 
@@ -61,6 +62,13 @@ async function openMenuItem(menuItemIdList) {
     );
     await menuItem.click();
   }
+}
+
+async function getImage(element){
+  const elementBounds = await element.boundingBox();
+  return page.screenshot({
+    clip: elementBounds,
+  });
 }
 
 function xPathContainsClass(className){
@@ -86,7 +94,7 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
 }
 
 describe("Html client", () => {
-  it("Should display a screen", async () => {
+  it("Should perform basic CRUD", async () => {
     await login();
     await openMenuItem(
       [
@@ -104,28 +112,71 @@ describe("Html client", () => {
     await addRowToMaster("str21", "str22");
     await addRowToMaster("str31", "str32");
 
-    await page.$eval("#saveButton", elem => elem .click())
-    await page.waitForSelector('#saveButton :not(.isRed)');
+    // await page.$eval("#saveButton", elem => elem .click())
+    // await page.waitForSelector('#saveButton :not(.isRed)');
 
-    // const scroller = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
-    // const scrollerImage = scroller.screenshot();
-    // expect(scrollerImage).toMatchImageSnapshot();
-
-    // const image = await page.screenshot();
-    // expect(image).toMatchImageSnapshot();
+    await sleep(500);
+    const scroller = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
+    const imageAfterAdding = await getImage(scroller)
+    expect(imageAfterAdding).toMatchImageSnapshot();
 
 
     // remove the second row
     const tableArea = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
     const box = await tableArea.boundingBox();
-    const x = box.x + 50;
-    const y = box.y + 45;
-    await page.mouse.click(x, y)
-    await sleep(100)
-    await page.$eval("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508 .deleteRow", elem => elem.click())
+    await page.mouse.click(
+      box.x + 50,
+      box.y + 45
+    );
+    const deleteRowButton = await page.waitForXPath(
+      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("deleteRow")}]`,
+      { visible: true }
+    );
+    await deleteRowButton.click();
 
-    console.log("Done.")
+    const yesRowButton = await page.waitForXPath(
+      `//button[@id='yesButton']`,
+      { visible: true }
+    );
+    await yesRowButton.click();
 
-    await sleep(120 * 1000);
+    // await page.$eval("#saveButton", elem => elem .click())
+    // await page.waitForSelector('#saveButton :not(.isRed)');
+
+    await sleep(500);
+    const imageAfterDeleting = await getImage(scroller);
+    expect(imageAfterDeleting).toMatchImageSnapshot();
+
+
+    //duplicate first row
+    await sleep(500);
+    await page.mouse.click(
+      box.x + 50,
+      box.y + 15
+    );
+
+    const copyRowButton = await page.waitForXPath(
+      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("copyRow")}]`,
+      { visible: true }
+    );
+    await copyRowButton.click();
+
+    await sleep(500);
+    const imageAfterCopying = await getImage(scroller);
+    expect(imageAfterCopying).toMatchImageSnapshot();
+
+    // throw the changes away
+    await page.$eval("#refreshButton", elem => elem .click())
+
+    const dontSaveButton = await page.waitForXPath(
+      `//button[@id='dontSaveButton']`,
+      { visible: true }
+    );
+    await dontSaveButton.click();
+    await sleep(500);
+    const imageAfterRefresh = await getImage(scroller);
+    expect(imageAfterRefresh).toMatchImageSnapshot();
+
+    //await sleep(120 * 1000);
   });
 });

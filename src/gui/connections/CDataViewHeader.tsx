@@ -371,7 +371,7 @@ export class CDataViewHeaderInner extends React.Component<{
 
                             {isCopyButton && !!selectedRow && (
                               <DataViewHeaderAction
-                                className="isOrangeHover"
+                                className="copyRow isOrangeHover"
                                 onMouseDown={onCopyRowClickEvt}
                                 onShortcut={onCopyRowClickEvt}
                                 shortcutPredicate={isDuplicateRecordShortcut}
