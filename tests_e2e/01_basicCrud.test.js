@@ -32,6 +32,11 @@ afterEach(async () => {
   browser = undefined;
 });
 
+const masterDataViewId = "dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508";
+const detailDataViewId = "dataView_b11ffa85-7507-475c-af50-ef08fd56072c";
+const detailEditorId = "editor_89be97a4-86e8-4036-b57a-36155e3f2322";
+const detailTabHandelId = "tabHandle_823ea459-bca5-476f-ab6f-9cb07769923e";
+
 async function login() {
   const userNameInput = await page.waitForXPath(
     `//input[@id='userNameInput']`,
@@ -78,7 +83,7 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
   const firstColumnEditorId = "editor_b2adeca9-7f20-410d-bbe5-fb78e29614c2";
   const secondColumnEditorId = "editor_8b796084-3347-4ad0-8380-00a373176bb0";
 
-  await page.$eval("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508 .addRow", elem => elem.click())
+  await page.$eval(`#${masterDataViewId} .addRow`, elem => elem.click())
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
   const inputCol1 = await page.$("#" + firstColumnEditorId);
@@ -91,14 +96,11 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
   await inputCol2.type(secondColumnValue)
 }
 
-async function addRowToDetail(firstColumnValue) {
-  const firstColumnEditorId = "editor_89be97a4-86e8-4036-b57a-36155e3f2322";
-
-  await page.$eval("#dataView_b11ffa85-7507-475c-af50-ef08fd56072c .addRow", elem => elem.click())
-
-  await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
-  const inputCol1 = await page.$("#" + firstColumnEditorId);
-  await inputCol1.type(firstColumnValue)
+async function addRowToDetail(detailValue) {
+  await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click())
+  await page.waitForFunction(`document.activeElement == document.getElementById("${detailEditorId}")`);
+  const inputCol1 = await page.$("#" + detailEditorId);
+  await inputCol1.type(detailValue);
 }
 
 async function refreshAndThrowChangesAway() {
@@ -123,7 +125,7 @@ describe("Html client", () => {
 
     // Add three rows
     await page.waitForXPath(
-      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("addRow")}]`,
+      `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
     await addRowToMaster("str11", "str12");
@@ -134,20 +136,20 @@ describe("Html client", () => {
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
     await sleep(500);
-    const scroller = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
+    const scroller = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
     const imageAfterAdding = await getImage(scroller)
     expect(imageAfterAdding).toMatchImageSnapshot();
 
 
     // remove the second row
-    const tableArea = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
+    const tableArea = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
     const box = await tableArea.boundingBox();
     await page.mouse.click(
       box.x + 50,
       box.y + 45
     );
     const deleteRowButton = await page.waitForXPath(
-      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("deleteRow")}]`,
+      `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("deleteRow")}]`,
       { visible: true }
     );
     await deleteRowButton.click();
@@ -174,7 +176,7 @@ describe("Html client", () => {
     );
 
     const copyRowButton = await page.waitForXPath(
-      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("copyRow")}]`,
+      `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("copyRow")}]`,
       { visible: true }
     );
     await copyRowButton.click();
@@ -199,49 +201,34 @@ describe("Html client", () => {
         "menu_691f8dfa-606f-46f3-9078-6891642af76e",
         "menu_12bef472-a744-4f5a-98f8-17c163137e9f"
       ]);
-
     // Add rows to master
     await page.waitForXPath(
-      `//div[@id='dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508']//div[${xPathContainsClass("addRow")}]`,
+      `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
     await addRowToMaster("str11", "str12");
     await addRowToMaster("str21", "str22");
 
     // Add a row to detail (second line in the master active)
-    const detailTabHandle = await page.$('#tabHandle_823ea459-bca5-476f-ab6f-9cb07769923e');
+    const detailTabHandle = await page.$(`#${detailTabHandelId}`);
     await detailTabHandle.click();
 
-    const formPerspectiveButton = await page.$('#dataView_b11ffa85-7507-475c-af50-ef08fd56072c .formPerspectiveButton');
+    const formPerspectiveButton = await page.$(`#${detailDataViewId} .formPerspectiveButton`);
     await formPerspectiveButton.click();
 
-    await page.$eval("#dataView_b11ffa85-7507-475c-af50-ef08fd56072c .addRow", elem => elem.click())
-
-    let firstColumnEditorId = "editor_89be97a4-86e8-4036-b57a-36155e3f2322";
-    await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
-
-    const inputCol1 = await page.$("#" + firstColumnEditorId);
-    await inputCol1.type("detail2");
+    await addRowToDetail("detail2");
 
     await sleep(500);
+    await selectMasterRow(0);
 
-    const tableArea = await page.$("#dataView_775fa5ea-fa75-40a7-8c39-7828f7cdf508  [class*='Table_cellAreaContainer']");
-    const box = await tableArea.boundingBox();
-    await page.mouse.click(
-      box.x + 50,
-      box.y + 15
-    );
-
+    const inputCol1 = await page.$("#" + detailEditorId);
     let detailColumnValue = await page.evaluate(x => x.value, inputCol1);
     expect(detailColumnValue).toBe("");
 
     await sleep(500);
-    await page.mouse.click(
-      box.x + 50,
-      box.y + 45
-    );
+    await selectMasterRow(1);
 
-    const inputCol11 = await page.$("#" + firstColumnEditorId);
+    const inputCol11 = await page.$("#" + detailEditorId);
     detailColumnValue = await page.evaluate(x => x.value, inputCol11);
     expect(detailColumnValue).toBe("detail2");
 
