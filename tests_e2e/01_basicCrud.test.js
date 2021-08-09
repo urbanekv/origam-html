@@ -1,12 +1,11 @@
 const puppeteer = require("puppeteer");
+const { userName, password, backEndUrl } = require('./additionalConfig');
 
 let browser;
 let page;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-//const BACKEND_URL = "https://server-https:3000";
-const BACKEND_URL = "https://192.168.56.1:44356";
 
 beforeEach(async () => {
   browser = await puppeteer.launch({
@@ -20,7 +19,7 @@ beforeEach(async () => {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   page = await browser.newPage();
-  await page.goto(BACKEND_URL);
+  await page.goto(backEndUrl);
   await page.evaluate(() => {
     localStorage.setItem("debugCloseAllForms", "1");
   });
@@ -39,13 +38,13 @@ async function login() {
     { visible: true }
   );
   await userNameInput.click();
-  await page.keyboard.type("washi");
+  await page.keyboard.type(userName);
 
   const passwordInput = await page.waitForXPath(`//input[@id='passInput']`, {
     visible: true,
   });
   await passwordInput.click();
-  await page.keyboard.type("blabla");
+  await page.keyboard.type(password);
 
   const loginButton = await page.waitForXPath(`//a[@id='loginButton']`, {
     visible: true,
