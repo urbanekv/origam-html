@@ -40,28 +40,32 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
   const firstColumnEditorId = "editor_b2adeca9-7f20-410d-bbe5-fb78e29614c2";
   const secondColumnEditorId = "editor_8b796084-3347-4ad0-8380-00a373176bb0";
 
-  await page.$eval(`#${masterDataViewId} .addRow`, elem => elem.click())
+  await sleep(300);
+  await page.$eval(`#${masterDataViewId} .addRow`, elem => elem.click());
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
   const inputCol1 = await page.$("#" + firstColumnEditorId);
-  await inputCol1.type(firstColumnValue)
+  await inputCol1.type(firstColumnValue);
 
   await page.keyboard.press("Tab");
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${secondColumnEditorId}")`);
   const inputCol2 = await page.$("#" + secondColumnEditorId);
-  await inputCol2.type(secondColumnValue)
+  await inputCol2.type(secondColumnValue);
+  await sleep(100);
 }
 
 async function addRowToDetail(detailValue) {
-  await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click())
+  await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click());
   await page.waitForFunction(`document.activeElement == document.getElementById("${detailEditorId}")`);
+  await sleep(100);
   const inputCol1 = await page.$("#" + detailEditorId);
   await inputCol1.type(detailValue);
+  await sleep(100);
 }
 
 async function getRowCountData(dataViewId) {
-  const rowCountElement = await page.$(`#${dataViewId} .rowCount`);
+  const rowCountElement =  await page.waitForSelector(`#${dataViewId} .rowCount`);
   let rowCountText = await page.evaluate(x => x.textContent, rowCountElement);
   const rowCountData = rowCountText
     .split("/")
@@ -73,7 +77,7 @@ async function getRowCountData(dataViewId) {
 }
 
 async function refreshAndThrowChangesAway() {
-  await page.$eval("#refreshButton", elem => elem.click())
+  await page.$eval("#refreshButton", elem => elem.click());
 
   const dontSaveButton = await page.waitForXPath(
     `//button[@id='dontSaveButton']`,
@@ -128,9 +132,13 @@ describe("Html client", () => {
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
     await sleep(500);
-    const scroller = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
-    const imageAfterAdding = await getImage(page, scroller)
-    expect(imageAfterAdding).toMatchImageSnapshot();
+    const rowCountData = await getRowCountData(masterDataViewId);
+    expect(rowCountData.selectedRow).toBe("3");
+    expect(rowCountData.rowCount).toBe("3");
+
+    // const scroller = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
+    // const imageAfterAdding = await getImage(page, scroller)
+    // expect(imageAfterAdding).toMatchImageSnapshot();
 
 
     // remove the second row
@@ -144,6 +152,9 @@ describe("Html client", () => {
       `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("deleteRow")}]`,
       { visible: true }
     );
+    const rowCountDataBeforeDelete = await getRowCountData(masterDataViewId);
+    expect(rowCountDataBeforeDelete.selectedRow).toBe("2");
+    expect(rowCountDataBeforeDelete.rowCount).toBe("3");
     await deleteRowButton.click();
 
     const yesRowButton = await page.waitForXPath(
@@ -156,8 +167,11 @@ describe("Html client", () => {
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
     await sleep(500);
-    const imageAfterDeleting = await getImage(page, scroller);
-    expect(imageAfterDeleting).toMatchImageSnapshot();
+    const rowCountDataAfterDelete = await getRowCountData(masterDataViewId);
+    expect(rowCountDataAfterDelete.selectedRow).toBe("2");
+    expect(rowCountDataAfterDelete.rowCount).toBe("2");
+    // const imageAfterDeleting = await getImage(page, scroller);
+    // expect(imageAfterDeleting).toMatchImageSnapshot();
 
 
     //duplicate first row
@@ -174,14 +188,14 @@ describe("Html client", () => {
     await copyRowButton.click();
 
     await sleep(500);
-    const imageAfterCopying = await getImage(page, scroller);
-    expect(imageAfterCopying).toMatchImageSnapshot();
+    const rowCountDataAfterDuplication = await getRowCountData(masterDataViewId);
+    expect(rowCountDataAfterDuplication.selectedRow).toBe("3");
+    expect(rowCountDataAfterDuplication.rowCount).toBe("3");
+    // const imageAfterCopying = await getImage(page, scroller);
+    // expect(imageAfterCopying).toMatchImageSnapshot();
 
-    // throw the changes away
     await refreshAndThrowChangesAway();
     await sleep(500);
-    const imageAfterRefresh = await getImage(page, scroller);
-    expect(imageAfterRefresh).toMatchImageSnapshot();
 
     //await sleep(120 * 1000);
   });
@@ -213,6 +227,7 @@ describe("Html client", () => {
 
     await sleep(500);
     await selectMasterRow(0);
+    await sleep(500);
 
     const inputCol1 = await page.$("#" + detailEditorId);
     let detailColumnValue = await page.evaluate(x => x.value, inputCol1);
@@ -225,9 +240,8 @@ describe("Html client", () => {
     detailColumnValue = await page.evaluate(x => x.value, inputCol11);
     expect(detailColumnValue).toBe("detail2");
 
-    // throw the changes away
     await refreshAndThrowChangesAway();
 
-    await sleep(120 * 1000);
+    //await sleep(120 * 1000);
   });
 });
