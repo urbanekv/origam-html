@@ -1,11 +1,9 @@
 const puppeteer = require("puppeteer");
-const { userName, password, backEndUrl } = require('./additionalConfig');
+const { backEndUrl } = require('./additionalConfig');
+const { sleep, xPathContainsClass, getImage, openMenuItem, login } = require('./testTools');
 
 let browser;
 let page;
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 beforeEach(async () => {
   browser = await puppeteer.launch({
@@ -37,47 +35,6 @@ const detailDataViewId = "dataView_b11ffa85-7507-475c-af50-ef08fd56072c";
 const detailEditorId = "editor_89be97a4-86e8-4036-b57a-36155e3f2322";
 const detailTabHandelId = "tabHandle_823ea459-bca5-476f-ab6f-9cb07769923e";
 
-async function login() {
-  const userNameInput = await page.waitForXPath(
-    `//input[@id='userNameInput']`,
-    { visible: true }
-  );
-  await userNameInput.click();
-  await page.keyboard.type(userName);
-
-  const passwordInput = await page.waitForXPath(`//input[@id='passInput']`, {
-    visible: true,
-  });
-  await passwordInput.click();
-  await page.keyboard.type(password);
-
-  const loginButton = await page.waitForXPath(`//a[@id='loginButton']`, {
-    visible: true,
-  });
-  await sleep(500); // give the translations some time to load
-  await loginButton.click();
-}
-
-async function openMenuItem(menuItemIdList) {
-  for (const menuItemId of menuItemIdList) {
-    const menuItem = await page.waitForXPath(
-      `//div[@id='${menuItemId}']`,
-      {visible: true}
-    );
-    await menuItem.click();
-  }
-}
-
-async function getImage(element){
-  const elementBounds = await element.boundingBox();
-  return page.screenshot({
-    clip: elementBounds,
-  });
-}
-
-function xPathContainsClass(className){
-  return `contains(concat(' ',normalize-space(@class),' '),' ${className} ')`
-}
 
 async function addRowToMaster(firstColumnValue, secondColumnValue) {
   const firstColumnEditorId = "editor_b2adeca9-7f20-410d-bbe5-fb78e29614c2";
@@ -149,8 +106,9 @@ async function selectMasterRow(rowIndex) {
 
 describe("Html client", () => {
   it("Should perform basic CRUD", async () => {
-    await login();
+    await login(page);
     await openMenuItem(
+      page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
         "menu_691f8dfa-606f-46f3-9078-6891642af76e",
@@ -171,7 +129,7 @@ describe("Html client", () => {
 
     await sleep(500);
     const scroller = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
-    const imageAfterAdding = await getImage(scroller)
+    const imageAfterAdding = await getImage(page, scroller)
     expect(imageAfterAdding).toMatchImageSnapshot();
 
 
@@ -198,7 +156,7 @@ describe("Html client", () => {
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
     await sleep(500);
-    const imageAfterDeleting = await getImage(scroller);
+    const imageAfterDeleting = await getImage(page, scroller);
     expect(imageAfterDeleting).toMatchImageSnapshot();
 
 
@@ -216,20 +174,21 @@ describe("Html client", () => {
     await copyRowButton.click();
 
     await sleep(500);
-    const imageAfterCopying = await getImage(scroller);
+    const imageAfterCopying = await getImage(page, scroller);
     expect(imageAfterCopying).toMatchImageSnapshot();
 
     // throw the changes away
     await refreshAndThrowChangesAway();
     await sleep(500);
-    const imageAfterRefresh = await getImage(scroller);
+    const imageAfterRefresh = await getImage(page, scroller);
     expect(imageAfterRefresh).toMatchImageSnapshot();
 
     //await sleep(120 * 1000);
   });
   it("Should perform basic master detail interaction", async () => {
-    await login();
+    await login(page);
     await openMenuItem(
+      page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
         "menu_691f8dfa-606f-46f3-9078-6891642af76e",
