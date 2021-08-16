@@ -44,10 +44,12 @@ const OPERATORS = [
 
 const OpCombo: React.FC<{
   setting: any;
+  id: string;
   onChange: () => void;
 }> = observer((props) => {
   return (
     <FilterSettingsComboBox
+      id={props.id}
       trigger={<>{(OPERATORS.find((op) => op.type === props.setting.type) || {}).caption}</>}
     >
       {OPERATORS.map((op) => (
@@ -69,6 +71,7 @@ const OpCombo: React.FC<{
 
 @observer
 class OpEditors extends React.Component<{
+  id: string;
   setting?: any;
   onCurrentValueChanged: (currentValue: string) => void;
   currentValue: string;
@@ -99,6 +102,7 @@ class OpEditors extends React.Component<{
       case "ncontains":
         return (
           <input
+            id={this.props.id}
             className={CS.input}
             value={this.props.currentValue ?? ""}
             onChange={(event: any) => this.props.onCurrentValueChanged(event.target.value)}
@@ -120,6 +124,7 @@ export class FilterSettingsString extends React.Component<{
   setting?: any;
   autoFocus: boolean;
   onChange: ()=>void;
+  id:string;
 }> {
   
   static get defaultSettings(){
@@ -162,10 +167,12 @@ export class FilterSettingsString extends React.Component<{
   render() {
     return (
       <>
-        <OpCombo 
+        <OpCombo
+          id={"combo_"+this.props.id}
           setting={this.props.setting} 
           onChange={this.handleFilterTypeChange} />
-        <OpEditors 
+        <OpEditors
+          id={"input_"+this.props.id}
           setting={this.props.setting} 
           onChange={this.handleChange}
           currentValue={this.currentValue}

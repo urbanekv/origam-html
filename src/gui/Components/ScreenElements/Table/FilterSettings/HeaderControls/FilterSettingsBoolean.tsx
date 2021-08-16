@@ -32,6 +32,7 @@ const OPERATORS: Operator[] = [Operator.equals];
 @observer
 export class FilterSettingsBoolean extends React.Component<{
   setting?: any;
+  id: string;
 }> {
 
   static get defaultSettings(){
@@ -55,7 +56,10 @@ export class FilterSettingsBoolean extends React.Component<{
   render() {
     return (
       <>
-        <FilterSettingsComboBox trigger={<>=</>}>
+        <FilterSettingsComboBox
+            id={this.props.id}
+            trigger={<>=</>}
+        >
           <FilterSettingsComboBoxItem>=</FilterSettingsComboBoxItem>
         </FilterSettingsComboBox>
         <Checkbox

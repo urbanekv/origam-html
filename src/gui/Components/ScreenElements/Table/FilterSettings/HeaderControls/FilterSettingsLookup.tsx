@@ -71,9 +71,11 @@ const LOOKUP_TYPE_OPERATORS = [
 const OpCombo: React.FC<{
   setting: any;
   enableLookupTypeFilters: boolean
+  id: string;
 }> = observer((props) => {
   return (
     <FilterSettingsComboBox
+      id={props.id}
       trigger={<>{(OPERATORS.find((op) => op.type === props.setting.type) || {}).caption}</>}
     >
       {OPERATORS
@@ -107,6 +109,7 @@ class OpEditors extends React.Component<{
   lookup: ILookup;
   property: IProperty;
   autoFocus: boolean;
+  id: string;
 }> {
 
   @action.bound handleSelectedItemsChange(items: Array<any>) {
@@ -142,6 +145,7 @@ class OpEditors extends React.Component<{
       case "ncontains":
          return (
           <input
+            id={this.props.id}
             value={this.props.setting.val2 ?? ""}
             className={CS.input}
             onChange={this.handleTermChange} 
@@ -162,6 +166,7 @@ export class FilterSettingsLookup extends React.Component<{
   property: IProperty;
   setting: IFilterSetting;
   autoFocus: boolean;
+  id: string;
 }> {
   static get defaultSettings(){
     return new LookupFilterSetting(OPERATORS[0].type)
@@ -172,9 +177,11 @@ export class FilterSettingsLookup extends React.Component<{
     return (
       <>
         <OpCombo
+          id={"combo_" + this.props.id}
           setting={setting}
           enableLookupTypeFilters={this.props.property.supportsServerSideSorting}/>
         <OpEditors
+          id={"input_" + this.props.id}
           setting={setting}
           getOptions={this.props.getOptions}
           lookup={this.props.lookup}

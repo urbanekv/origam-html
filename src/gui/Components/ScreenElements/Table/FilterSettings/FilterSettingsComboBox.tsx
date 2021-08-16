@@ -29,6 +29,7 @@ import _ from "lodash";
 @observer
 export class FilterSettingsComboBox extends React.Component<{
   trigger: React.ReactNode;
+  id: string;
 }> {
   @observable isDroppedDown = false;
 
@@ -84,7 +85,7 @@ export class FilterSettingsComboBox extends React.Component<{
         {({ measureRef: refTriggerMeasure, contentRect: triggerContentRect }) => (
           <Observer>
             {() => (
-              <div className={S.container} ref={this.refDropdown}>
+              <div id={this.props.id} className={S.container} ref={this.refDropdown}>
                 <div
                   ref={refTriggerMeasure}
                   className={S.trigger}

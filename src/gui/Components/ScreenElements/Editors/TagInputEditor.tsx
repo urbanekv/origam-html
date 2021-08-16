@@ -57,6 +57,7 @@ export const TagInputEditor = inject(({ property }: { property: IProperty }, { v
       onEditorBlur?(event: any): void;
       customInputClass?: string;
       autoFocus?: boolean;
+      id?: string;
     }) => {
       const beh = useContext(CtxDropdownEditor).behavior;
       const ref = useContext(CtxDropdownRefCtrl);
@@ -150,6 +151,7 @@ export const TagInputEditor = inject(({ property }: { property: IProperty }, { v
               <TagInputAdd onClick={(event) => beh.elmInputElement.focus()} />
             )}
             <input
+              id={props.id}
               disabled={props.isReadOnly}
               className={S.filterInput + " " + props.customInputClass}
               ref={refInput}
