@@ -99,6 +99,7 @@ export class FilterSettingsComboBox extends React.Component<{
                 {this.isDroppedDown &&
                   createPortal(
                     <div
+                      id={"dropdown_" + this.props.id}
                       className={S.dropdown}
                       onClick={this.handleDropdownClick}
                       style={{
