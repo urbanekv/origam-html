@@ -116,7 +116,7 @@ class OpEditors extends React.Component<{
         return (
           <>
             <input
-              id={"form_" + this.props.id}
+              id={"from_" + this.props.id}
               type="number"
               className={CS.input}
               value={this.props.currentValue1 ?? ""}
