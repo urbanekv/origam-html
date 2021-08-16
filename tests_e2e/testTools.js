@@ -3,6 +3,24 @@ const {userName, password} = require("./additionalConfig");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function login(page) {
+
+  const languageLink = await page.waitForXPath(
+    `//a[@value='en-US']`,
+    { visible: true }
+  );
+
+  const languageLinkClass = await (await languageLink.getProperty('className')).jsonValue();
+
+  if(languageLinkClass.indexOf("inactiveLanguageLink") === -1){
+    await languageLink.click();
+    await page.waitForNavigation({waitUntil: "load"});
+    const englishLogin = await page.waitForXPath(
+      `//a[text()='Login']`,
+      { visible: true }
+    );
+    await sleep(100);
+  }
+
   const userNameInput = await page.waitForXPath(
     `//input[@id='userNameInput']`,
     { visible: true }
