@@ -49,4 +49,16 @@ function xPathContainsClass(className){
 }
 
 
-module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login};
+async function getRowCountData(page, dataViewId) {
+  const rowCountElement =  await page.waitForSelector(`#${dataViewId} .rowCount`);
+  let rowCountText = await page.evaluate(x => x.textContent, rowCountElement);
+  const rowCountData = rowCountText
+    .split("/")
+    .map(x => x.trim())
+    .filter(x=> x !== "");
+  return {
+    rowCount: rowCountData[1],
+    selectedRow: rowCountData[0]};
+}
+
+module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData};
