@@ -4,22 +4,22 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function login(page) {
 
-  const languageLink = await page.waitForXPath(
-    `//a[@value='en-US']`,
-    { visible: true }
-  );
-
-  const languageLinkClass = await (await languageLink.getProperty('className')).jsonValue();
-
-  if(languageLinkClass.indexOf("inactiveLanguageLink") === -1){
-    await languageLink.click();
-    await page.waitForNavigation({waitUntil: "load"});
-    const englishLogin = await page.waitForXPath(
-      `//a[text()='Login']`,
-      { visible: true }
-    );
-    await sleep(100);
-  }
+  // const languageLink = await page.waitForXPath(
+  //   `//a[@value='en-US']`,
+  //   { visible: true }
+  // );
+  //
+  // const languageLinkClass = await (await languageLink.getProperty('className')).jsonValue();
+  //
+  // if(languageLinkClass.indexOf("inactiveLanguageLink") === -1){
+  //   await languageLink.click();
+  //   await page.waitForNavigation({waitUntil: "load"});
+  //   const englishLogin = await page.waitForXPath(
+  //     `//a[text()='Login']`,
+  //     { visible: true }
+  //   );
+  //   await sleep(100);
+  // }
 
   const userNameInput = await page.waitForXPath(
     `//input[@id='userNameInput']`,
@@ -79,4 +79,35 @@ async function getRowCountData(page, dataViewId) {
     selectedRow: rowCountData[0]};
 }
 
-module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData};
+
+async function waitForRowCountToChange(page, dataViewId, initValue) {
+  await page.waitForSelector(
+    `#${dataViewId} .rowCount`,
+    {visible: true});
+  // await page.waitForFunction(
+  //   (dataViewId, initValue) => {
+  //     const rowCountElement = document.getElementById(`#${dataViewId} .rowCount`);
+  //     console.log("dataViewId: " + dataViewId);
+  //     console.log("initValue: " + initValue);
+  //     console.log("rowCountElement: " + rowCountElement)
+  //     return false;
+  //     // let rowCountText = rowCountElement.textContent;
+  //     // const rowCountData = rowCountText
+  //     //   .split("/")
+  //     //   .map(x => x.trim())
+  //     //   .filter(x=> x !== "");
+  //     // return rowCountData[1] !== initValue
+  //   },
+  //   {}, dataViewId, initValue);
+
+  for (let i = 0; i < 100; i++) {
+    const countData = await getRowCountData(page, dataViewId)
+    if(countData.rowCount !== initValue.toString()){
+      return countData;
+    }
+    await sleep(200);
+  }
+  throw new Error("Row count did not change before timeout");
+}
+
+module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountToChange};
