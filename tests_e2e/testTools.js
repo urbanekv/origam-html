@@ -25,18 +25,14 @@ async function login(page) {
     `//input[@id='userNameInput']`,
     { visible: true }
   );
-  await userNameInput.click();
-  await sleep(200);
-  await page.keyboard.type(userName);
+  await userNameInput.type(userName);
   await sleep(200);
 
   const passwordInput = await page.waitForXPath(`//input[@id='passInput']`, {
     visible: true,
   });
-  await passwordInput.click();
-  await sleep(200);
-  await page.keyboard.type(password);
-  await sleep(200);
+  await passwordInput.type(password);
+   await sleep(200);
 
   const loginButton = await page.waitForXPath(`//a[@id='loginButton']`, {
     visible: true,
