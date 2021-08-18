@@ -62,6 +62,29 @@ function xPathContainsClass(className){
   return `contains(concat(' ',normalize-space(@class),' '),' ${className} ')`
 }
 
+async function waitForRowCount(page, dataViewId, expectedRowCount){
+  await getTableData(page, dataViewId, expectedRowCount)
+}
+
+async function getTableData(page, dataViewId, expectedRowCount){
+  const modelInstanceId = dataViewId.substring(9);
+  const timeoutMs = 10_000;
+  const evalDelayMs = 50;
+  let tableData
+  for (let i = 0; i < timeoutMs / evalDelayMs; i++) {
+    tableData = await page.evaluate(
+      modelInstanceId => window.tableDebugMonitor && window.tableDebugMonitor[modelInstanceId],
+      modelInstanceId);
+    if(tableData && tableData.rendered && tableData.data.length === expectedRowCount){
+      await page.evaluate(() => window.tableDebugMonitor = undefined);
+      return tableData;
+    }
+    await sleep(evalDelayMs);
+  }
+  await page.evaluate(() => window.tableDebugMonitor = undefined);
+  const rowCount = tableData ?  tableData.data.length : 0;
+  expect(rowCount).toBe(expectedRowCount);
+}
 
 async function getRowCountData(page, dataViewId) {
   const rowCountElement =  await page.waitForSelector(`#${dataViewId} .rowCount`);
@@ -75,6 +98,21 @@ async function getRowCountData(page, dataViewId) {
     selectedRow: rowCountData[0]};
 }
 
+async function waitForRowCountToChange1(page, dataViewId, value) {
+  await page.waitForSelector(
+    `#${dataViewId} .rowCount`,
+    {visible: true});
+
+  let countData = await getRowCountData(page, dataViewId)
+  for (let i = 0; i < 200; i++) {
+    countData = await getRowCountData(page, dataViewId)
+    if(countData.rowCount === value.toString()){
+      break;
+    }
+    await sleep(50);
+  }
+  expect(countData.rowCount).toBe(value.toString());
+}
 
 async function waitForRowCountToChange(page, dataViewId, initValue) {
   await page.waitForSelector(
@@ -106,4 +144,5 @@ async function waitForRowCountToChange(page, dataViewId, initValue) {
   throw new Error("Row count did not change before timeout");
 }
 
-module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountToChange};
+module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountToChange,
+  waitForRowCountToChange1, getTableData, waitForRowCount};

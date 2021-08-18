@@ -27,6 +27,7 @@ import { getDataTable } from "model/selectors/DataView/getDataTable";
 import _ from "lodash";
 import { fixRowIdentifier } from "utils/dataRow";
 import {IDataView} from "./types/IDataView";
+import {FlowBusyMonitor} from "utils/flow";
 
 export class ListRowContainer implements IRowsContainer {
   private orderingConfiguration: IOrderingConfiguration;
@@ -110,6 +111,7 @@ export class ListRowContainer implements IRowsContainer {
   }
 
   updateSortAndFilterDebounced = _.debounce(this.updateSortAndFilter, 10);
+  monitor: FlowBusyMonitor =  new FlowBusyMonitor();
 
   @action
   async updateSortAndFilter(data?: {retainPreviousSelection?: boolean}) {

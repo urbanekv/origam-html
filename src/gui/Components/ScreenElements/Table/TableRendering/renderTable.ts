@@ -52,6 +52,10 @@ import {CPR} from "utils/canvas";
 import {IProperty} from "model/entities/types/IProperty";
 import {currentRowCellsDimensions, currentRowCellsDraws,} from "./currentRowCells";
 import {cellLayerCount, setLayerIndex} from "./currentCellLayerIndex";
+import {
+  clearTableDebugValues,
+  setTableDebugRendered
+} from "gui/Components/ScreenElements/Table/TableRendering/DebugTableMonitor";
 
 export function renderTable(
   aCtx: any,
@@ -104,12 +108,16 @@ export function renderTable(
     for (let i = i0; i <= i1; i++) {
       renderRow(i);
     }
+    setTableDebugRendered(context())
   } finally {
     for (let d of scRenderTable) d();
   }
 }
 
 function renderRowInternal() {
+  if(rowIndex() === 0){
+    clearTableDebugValues(context());
+  }
   const fixColC = realFixedColumnCount();
   const firstDrCI = firstDrawableColumnIndex();
   const lastDrCI = lastDrawableColumnIndex();
