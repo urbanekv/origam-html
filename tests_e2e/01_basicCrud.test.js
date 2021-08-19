@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
-const { sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData } = require('./testTools');
+const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, waitForRowCount, catchRequests} = require('./testTools');
 
 let browser;
 let page;
@@ -57,6 +57,7 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
 }
 
 async function addRowToDetail(detailValue) {
+  await sleep(100);
   await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click());
   await page.waitForFunction(`document.activeElement == document.getElementById("${detailEditorId}")`);
   await sleep(100);
@@ -113,14 +114,16 @@ describe("Html client", () => {
       `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
+    let waitForRequests = catchRequests(page);
     await addRowToMaster("str11", "str12");
     await addRowToMaster("str21", "str22");
     await addRowToMaster("str31", "str32");
 
+    await waitForRequests;
     // await page.$eval("#saveButton", elem => elem .click())
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
-    await sleep(500);
+    await sleep(300);
     const rowCountData = await getRowCountData(page, masterDataViewId);
     expect(rowCountData.selectedRow).toBe("3");
     expect(rowCountData.rowCount).toBe("3");
@@ -131,6 +134,7 @@ describe("Html client", () => {
 
 
     // remove the second row
+    await sleep(500);
     const tableArea = await page.$(`#${masterDataViewId}  [class*='Table_cellAreaContainer']`);
     const box = await tableArea.boundingBox();
     await page.mouse.click(
@@ -151,11 +155,12 @@ describe("Html client", () => {
       { visible: true }
     );
     await yesRowButton.click();
+    await waitForRequests;
 
     // await page.$eval("#saveButton", elem => elem .click())
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
-    await sleep(500);
+    await sleep(300);
     const rowCountDataAfterDelete = await getRowCountData(page, masterDataViewId);
     expect(rowCountDataAfterDelete.selectedRow).toBe("2");
     expect(rowCountDataAfterDelete.rowCount).toBe("2");
@@ -164,7 +169,6 @@ describe("Html client", () => {
 
 
     //duplicate first row
-    await sleep(500);
     await page.mouse.click(
       box.x + 50,
       box.y + 15
@@ -176,7 +180,7 @@ describe("Html client", () => {
     );
     await copyRowButton.click();
 
-    await sleep(500);
+    await sleep(300);
     const rowCountDataAfterDuplication = await getRowCountData(page, masterDataViewId);
     expect(rowCountDataAfterDuplication.selectedRow).toBe("3");
     expect(rowCountDataAfterDuplication.rowCount).toBe("3");
@@ -186,7 +190,7 @@ describe("Html client", () => {
     await refreshAndThrowChangesAway();
     await sleep(500);
 
-    //await sleep(120 * 1000);
+    // await sleep(120 * 1000);
   });
   it("Should perform basic master detail interaction", async () => {
     await login(page);

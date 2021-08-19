@@ -98,42 +98,45 @@ async function getRowCountData(page, dataViewId) {
     selectedRow: rowCountData[0]};
 }
 
-async function waitForRowCountToChange1(page, dataViewId, value) {
-  await page.waitForSelector(
-    `#${dataViewId} .rowCount`,
-    {visible: true});
-
-  let countData = await getRowCountData(page, dataViewId)
-  for (let i = 0; i < 200; i++) {
-    countData = await getRowCountData(page, dataViewId)
-    if(countData.rowCount === value.toString()){
-      break;
+async function waitForRowSelected(page, dataViewId, rowNumber){
+  const timeoutMs = 10_000;
+  const testDelayMs = 50;
+  let rowCountData;
+  for (let i = 0; i < timeoutMs / testDelayMs ; i++) {
+    rowCountData = await getRowCountData(page, dataViewId);
+    if(rowCountData.selectedRow === rowNumber.toString()){
+      return;
     }
-    await sleep(50);
+    console.log("rowCountData.selectedRow: "+rowCountData.selectedRow)
+    await sleep(testDelayMs);
   }
-  expect(countData.rowCount).toBe(value.toString());
+  expect(rowCountData && rowCountData.selectedRow).toBe(rowNumber.toString());
+}
+
+function catchRequests(page, reqs = 0) {
+  const started = () => (reqs = reqs + 1);
+  const ended = () => (reqs = reqs - 1);
+  page.on('request', started);
+  page.on('requestfailed', ended);
+  page.on('requestfinished', ended);
+  return async (timeout = 5000, success = false) => {
+    while (true) {
+      if (reqs < 1) break;
+      await new Promise((yay) => setTimeout(yay, 100));
+      if ((timeout = timeout - 100) < 0) {
+        throw new Error('Timeout');
+      }
+    }
+    page.off('request', started);
+    page.off('requestfailed', ended);
+    page.off('requestfinished', ended);
+  };
 }
 
 async function waitForRowCountToChange(page, dataViewId, initValue) {
   await page.waitForSelector(
     `#${dataViewId} .rowCount`,
     {visible: true});
-  // await page.waitForFunction(
-  //   (dataViewId, initValue) => {
-  //     const rowCountElement = document.getElementById(`#${dataViewId} .rowCount`);
-  //     console.log("dataViewId: " + dataViewId);
-  //     console.log("initValue: " + initValue);
-  //     console.log("rowCountElement: " + rowCountElement)
-  //     return false;
-  //     // let rowCountText = rowCountElement.textContent;
-  //     // const rowCountData = rowCountText
-  //     //   .split("/")
-  //     //   .map(x => x.trim())
-  //     //   .filter(x=> x !== "");
-  //     // return rowCountData[1] !== initValue
-  //   },
-  //   {}, dataViewId, initValue);
-
   for (let i = 0; i < 100; i++) {
     const countData = await getRowCountData(page, dataViewId)
     if(countData.rowCount !== initValue.toString()){
@@ -145,4 +148,4 @@ async function waitForRowCountToChange(page, dataViewId, initValue) {
 }
 
 module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountToChange,
-  waitForRowCountToChange1, getTableData, waitForRowCount};
+  getTableData, waitForRowCount, catchRequests, waitForRowSelected};

@@ -24,7 +24,7 @@ export function clearTableDebugValues(ctx: any){
   const dataView = getDataView(ctx);
   const tableId = dataView.modelInstanceId;
   const win = (window as any);
-  if(win.tableDebugMonitor){
+  if(win.tableDebugMonitor && win.tableDebugMonitor[tableId]){
     win.tableDebugMonitor[tableId].data = [];
   }
 }
