@@ -65,6 +65,86 @@ async function setFilter(args){
   input.type(args.value);
 }
 
+async function setDateFilter(args){
+  const inputId = "input_" + args.propertyId;
+  const comboId = "combo_" +  args.propertyId;
+  const dropdownId = "dropdown_combo_" + args.propertyId;
+
+  const text1FilterCombo = await page.waitForSelector(
+    `#${comboId}`,
+    { visible: true }
+  );
+  await text1FilterCombo.click();
+
+  const optionDiv = await page.waitForXPath(
+    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
+    { visible: true }
+  );
+
+  await optionDiv.click();
+
+  if(args.value === undefined){
+    return;
+  }
+
+  const input = await page.waitForSelector(
+    `#${inputId}`,
+    {visible: true});
+
+  input.type(args.value);
+
+  await sleep(500);
+  let parent_node = await input.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  await parent_node.click();
+  await sleep(300);
+}
+
+async function setTwoFieldDateFilter(args){
+  const fromInputId = "from_input_" + args.propertyId;
+  const toInputId = "to_input_" + args.propertyId;
+  const comboId = "combo_" + args.propertyId;
+  const dropdownId = "dropdown_combo_" + args.propertyId;
+
+  const text1FilterCombo = await page.waitForSelector(
+    `#${comboId}`,
+    { visible: true }
+  );
+  await text1FilterCombo.click();
+
+  const optionDiv = await page.waitForXPath(
+    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
+    { visible: true }
+  );
+
+  await optionDiv.click();
+
+  const fromInput = await page.waitForSelector(
+    `#${fromInputId}`,
+    {visible: true});
+
+  fromInput.type(args.fromValue);
+
+  await sleep(300);
+
+  const toInput = await page.waitForSelector(
+    `#${toInputId}`,
+    {visible: true});
+
+  toInput.type(args.toValue);
+
+  await sleep(500);
+  let parent_node = await toInput.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  parent_node = await parent_node.getProperty('parentNode')
+  await parent_node.click();
+  await sleep(300);
+}
+
+
 async function setTwoFieldFilter(args){
   const fromInputId = "from_input_" + args.propertyId;
   const toInputId = "to_input_" + args.propertyId;
@@ -105,6 +185,7 @@ const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
 const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
 const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
+const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests", async () => {
@@ -336,5 +417,106 @@ describe("Html client", () => {
     await boolFilterCheckBox.click();
 
     await waitForRowCount(page, dataViewId,29);
+  });
+  it("Should perform basic date filter tests", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+      ]);
+
+    await waitForRowCount(page, dataViewId,30);
+
+    await sleep(300);
+
+    const filterButton = await page.waitForSelector(
+      `#${dataViewId} [class*='test-filter-button']`,
+      {visible: true});
+    await filterButton.click();
+
+    await sleep(300);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "=",
+      value: "03.07.2021"
+    })
+
+    await waitForRowCount(page, dataViewId,1);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "≠",
+      value: "03.07.2021"
+    })
+    await waitForRowCount(page, dataViewId,29);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "≤",
+      value: "03.07.2021"
+    })
+
+    await waitForRowCount(page, dataViewId,11);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "≥",
+      value: "03.07.2021"
+    })
+
+    await waitForRowCount(page, dataViewId,20);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "<",
+      value: "03.07.2021"
+    })
+
+    await waitForRowCount(page, dataViewId,10);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: ">",
+      value: "03.07.2021"
+    })
+
+    await waitForRowCount(page, dataViewId,19);
+
+    await setTwoFieldDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "between",
+      fromValue: "03.07.2021",
+      toValue: "25.07.2021",
+    })
+
+    await waitForRowCount(page, dataViewId,20);
+
+    await setTwoFieldDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "not between",
+      fromValue: "03.07.2021",
+      toValue: "25.07.2021",
+    })
+
+    await waitForRowCount(page, dataViewId,11);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "is null",
+      value: undefined
+    })
+
+    await waitForRowCount(page, dataViewId,0);
+
+    await setDateFilter({
+      propertyId: date1PropertyId ,
+      comboOptionText: "is not null",
+      value: undefined
+    })
+
+    await waitForRowCount(page, dataViewId,30);
   });
 });
