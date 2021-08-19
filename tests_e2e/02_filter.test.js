@@ -104,6 +104,7 @@ async function setTwoFieldFilter(args){
 const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
 const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
+const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests", async () => {
@@ -306,5 +307,34 @@ describe("Html client", () => {
       })
 
     await waitForRowCount(page, dataViewId,30);
+  });
+  it("Should perform basic bool filter tests", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+      ]);
+
+    await waitForRowCount(page, dataViewId,30);
+
+    await sleep(300);
+
+    const filterButton = await page.waitForSelector(
+      `#${dataViewId} [class*='test-filter-button']`,
+      {visible: true});
+    await filterButton.click();
+
+    await sleep(300);
+
+    let boolFilterCheckBox = await page.waitForSelector(`#input_${boolean1PropertyId}`);
+    await boolFilterCheckBox.click();
+
+    await waitForRowCount(page, dataViewId,1);
+
+    await boolFilterCheckBox.click();
+
+    await waitForRowCount(page, dataViewId,29);
   });
 });

@@ -57,12 +57,13 @@ export class FilterSettingsBoolean extends React.Component<{
     return (
       <>
         <FilterSettingsComboBox
-            id={this.props.id}
+            id={"combo_"+this.props.id}
             trigger={<>=</>}
         >
           <FilterSettingsComboBoxItem>=</FilterSettingsComboBoxItem>
         </FilterSettingsComboBox>
         <Checkbox
+          id={"input_"+this.props.id}
           indeterminate={this.props.setting.val1 === undefined}
           checked={this.props.setting.val1}
           onClick={this.handleValueClick}
