@@ -62,7 +62,7 @@ async function setFilter(args){
   const filterValue = await page.evaluate(x => x.value, input);
   expect(filterValue).toBe("");
 
-  input.type(args.value);
+  await input.type(args.value);
 }
 
 async function setDateFilter(args){
@@ -74,6 +74,8 @@ async function setDateFilter(args){
     `#${comboId}`,
     { visible: true }
   );
+  await sleep(200);
+
   await text1FilterCombo.click();
 
   const optionDiv = await page.waitForXPath(
@@ -91,7 +93,7 @@ async function setDateFilter(args){
     `#${inputId}`,
     {visible: true});
 
-  input.type(args.value);
+  await input.type(args.value);
 
   await sleep(500);
   let parent_node = await input.getProperty('parentNode')
@@ -125,7 +127,7 @@ async function setTwoFieldDateFilter(args){
     `#${fromInputId}`,
     {visible: true});
 
-  fromInput.type(args.fromValue);
+  await fromInput.type(args.fromValue);
 
   await sleep(300);
 
@@ -133,7 +135,7 @@ async function setTwoFieldDateFilter(args){
     `#${toInputId}`,
     {visible: true});
 
-  toInput.type(args.toValue);
+  await toInput.type(args.toValue);
 
   await sleep(500);
   let parent_node = await toInput.getProperty('parentNode')
@@ -170,7 +172,7 @@ async function setTwoFieldFilter(args){
   const fromFilterValue = await page.evaluate(x => x.value, fromInput);
   expect(fromFilterValue).toBe("");
 
-  fromInput.type(args.fromValue);
+  await fromInput.type(args.fromValue);
 
   const toInput = await page.waitForSelector(
     `#${toInputId}`,
@@ -178,7 +180,7 @@ async function setTwoFieldFilter(args){
   const toFilterValue = await page.evaluate(x => x.value, toInput);
   expect(toFilterValue).toBe("");
 
-  toInput.type(args.toValue);
+  await toInput.type(args.toValue);
 }
 
 const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
