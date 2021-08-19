@@ -24,7 +24,7 @@ import { observer, Observer } from "mobx-react";
 import moment, { Moment } from "moment";
 import * as React from "react";
 import { toOrigamServerString } from "utils/moment";
-import { IFocusAble } from "../../../../model/entities/FormFocusManager";
+import { IFocusable } from "../../../../model/entities/FormFocusManager";
 import {getDefaultCsDateFormatDataFromCookie} from "../../../../utils/cookies";
 import DateCompleter from "./DateCompleter";
 import S from "./DateTimeEditor.module.scss";
@@ -184,7 +184,7 @@ export class DateTimeEditor extends React.Component<{
   onKeyDown?: (event: any) => void;
   onEditorBlur?: (event: any) => void;
   refocuser?: (cb: () => void) => () => void;
-  subscribeToFocusManager?: (obj: IFocusAble) => void;
+  subscribeToFocusManager?: (obj: IFocusable) => void;
 }> {
   @observable isDroppedDown = false;
 

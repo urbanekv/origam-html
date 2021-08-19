@@ -1,6 +1,6 @@
 import {getTablePanelView} from "../selectors/TablePanelView/getTablePanelView";
 import {getDataView} from "../selectors/DataView/getDataView";
-import {IFocusAble} from "./FormFocusManager";
+import {IFocusable} from "./FormFocusManager";
 
 export class GridFocusManager {
 
@@ -17,7 +17,7 @@ export class GridFocusManager {
     }
   }
 
-  activeEditor: IFocusAble | undefined;
+  activeEditor: IFocusable | undefined;
 
   focusEditor() {
     this.activeEditor?.focus();

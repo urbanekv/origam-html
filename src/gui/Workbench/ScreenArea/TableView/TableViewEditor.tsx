@@ -25,19 +25,19 @@ import { onFieldKeyDown } from "model/actions-ui/DataView/TableView/onFieldKeyDo
 import { getRowStateForegroundColor } from "model/selectors/RowState/getRowStateForegroundColor";
 import { getSelectedRowId } from "model/selectors/TablePanelView/getSelectedRowId";
 import React from "react";
-import { onFieldBlur } from "../../../../model/actions-ui/DataView/TableView/onFieldBlur";
-import { IProperty } from "../../../../model/entities/types/IProperty";
-import { getSelectedRow } from "../../../../model/selectors/DataView/getSelectedRow";
-import { getCellValue } from "../../../../model/selectors/TablePanelView/getCellValue";
-import { getSelectedProperty } from "../../../../model/selectors/TablePanelView/getSelectedProperty";
-import { BoolEditor } from "../../../Components/ScreenElements/Editors/BoolEditor";
-import { DateTimeEditor } from "../../../Components/ScreenElements/Editors/DateTimeEditor";
+import { onFieldBlur } from "model/actions-ui/DataView/TableView/onFieldBlur";
+import { IProperty } from "model/entities/types/IProperty";
+import { getSelectedRow } from "model/selectors/DataView/getSelectedRow";
+import { getCellValue } from "model/selectors/TablePanelView/getCellValue";
+import { getSelectedProperty } from "model/selectors/TablePanelView/getSelectedProperty";
+import { BoolEditor } from "gui/Components/ScreenElements/Editors/BoolEditor";
+import { DateTimeEditor } from "gui/Components/ScreenElements/Editors/DateTimeEditor";
 import { NumberEditor } from "gui/Components/ScreenElements/Editors/NumberEditor";
 import { BlobEditor } from "gui/Components/ScreenElements/Editors/BlobEditor";
-import { XmlBuildDropdownEditor } from "../../../../modules/Editors/DropdownEditor/DropdownEditor";
-import { getDataView } from "../../../../model/selectors/DataView/getDataView";
+import { XmlBuildDropdownEditor } from "modules/Editors/DropdownEditor/DropdownEditor";
+import { getDataView } from "model/selectors/DataView/getDataView";
 import uiActions from "../../../../model/actions-ui-tree";
-import { isReadOnly } from "../../../../model/selectors/RowState/isReadOnly";
+import { isReadOnly } from "model/selectors/RowState/isReadOnly";
 import { getTablePanelView } from "model/selectors/TablePanelView/getTablePanelView";
 import {
   cellPaddingRightFirstCell,
@@ -47,7 +47,7 @@ import { shadeHexColor } from "utils/colorUtils";
 import { getRowStateRowBgColor } from "model/selectors/RowState/getRowStateRowBgColor";
 import ColorEditor from "gui/Components/ScreenElements/Editors/ColorEditor";
 import { flashColor2htmlColor, htmlColor2FlashColor } from "utils/flashColorFormat";
-import {getGridFocusManager} from "../../../../model/entities/GridFocusManager";
+import {getGridFocusManager} from "model/entities/GridFocusManager";
 
 @inject(({ tablePanelView }) => {
   const row = getSelectedRow(tablePanelView)!;
