@@ -489,19 +489,19 @@ describe("Html client", () => {
       propertyId: date1PropertyId ,
       comboOptionText: "between",
       fromValue: "03.07.2021",
-      toValue: "25.07.2021",
+      toValue: "15.07.2021",
     })
 
-    await waitForRowCount(page, dataViewId,20);
+    await waitForRowCount(page, dataViewId,13);
 
     await setTwoFieldDateFilter({
       propertyId: date1PropertyId ,
       comboOptionText: "not between",
       fromValue: "03.07.2021",
-      toValue: "25.07.2021",
+      toValue: "15.07.2021",
     })
 
-    await waitForRowCount(page, dataViewId,11);
+    await waitForRowCount(page, dataViewId,17);
 
     await setDateFilter({
       propertyId: date1PropertyId ,
