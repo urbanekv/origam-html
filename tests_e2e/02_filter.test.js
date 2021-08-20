@@ -95,13 +95,31 @@ async function setDateFilter(args){
 
   await input.type(args.value);
 
+  await removeFocusFromDateInput(input);
+}
+
+async function removeFocusFromDateInput(toInput) {
   await sleep(500);
-  let parent_node = await input.getProperty('parentNode')
+  await clickParent(toInput);
+  await sleep(300);
+
+  for (let i = 0; i < 5; i++) {
+    const inputIsActive = await page.evaluate(inputId =>`document.activeElement === document.getElementById("${inputId}")`, toInput);
+    if(inputIsActive){
+      await clickParent(toInput);
+      await sleep(300);
+    }else{
+      return;
+    }
+  }
+}
+
+async function clickParent(toInput) {
+  let parent_node = await toInput.getProperty('parentNode')
   parent_node = await parent_node.getProperty('parentNode')
   parent_node = await parent_node.getProperty('parentNode')
   parent_node = await parent_node.getProperty('parentNode')
   await parent_node.click();
-  await sleep(300);
 }
 
 async function setTwoFieldDateFilter(args){
@@ -137,13 +155,7 @@ async function setTwoFieldDateFilter(args){
 
   await toInput.type(args.toValue);
 
-  await sleep(500);
-  let parent_node = await toInput.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  await parent_node.click();
-  await sleep(300);
+  await removeFocusFromDateInput(toInputId);
 }
 
 
