@@ -412,6 +412,10 @@ export class FormScreenLifecycle02 implements IFormScreenLifecycle02 {
       }
     );
     try {
+      const openedScreen = getOpenedScreen(this);
+      if(!openedScreen){
+        return;
+      }
       this.initialSelectedRowId = initUIResult.currentRecordId;
       yield* this.applyInitUIResult({ initUIResult });
       this.initializePlugins(initUIResult);
