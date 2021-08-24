@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { backEndUrl } = require('./additionalConfig');
+const { backEndUrl, password} = require('./additionalConfig');
 const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, waitForRowCount, catchRequests} = require('./testTools');
 
 let browser;
@@ -42,17 +42,19 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
   const secondColumnEditorId = "editor_8b796084-3347-4ad0-8380-00a373176bb0";
 
   await sleep(300);
+  let waitForRequests = catchRequests(page);
   await page.$eval(`#${masterDataViewId} .addRow`, elem => elem.click());
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${firstColumnEditorId}")`);
-  const inputCol1 = await page.$("#" + firstColumnEditorId);
-  await inputCol1.type(firstColumnValue);
+  await page.focus(`#${firstColumnEditorId}`)
+  await page.keyboard.type(firstColumnValue)
 
   await page.keyboard.press("Tab");
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${secondColumnEditorId}")`);
-  const inputCol2 = await page.$("#" + secondColumnEditorId);
-  await inputCol2.type(secondColumnValue);
+  await page.focus(`#${secondColumnEditorId}`)
+  await page.keyboard.type(secondColumnValue)
+  await waitForRequests;
   await sleep(100);
 }
 
@@ -61,8 +63,8 @@ async function addRowToDetail(detailValue) {
   await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click());
   await page.waitForFunction(`document.activeElement == document.getElementById("${detailEditorId}")`);
   await sleep(100);
-  const inputCol1 = await page.$("#" + detailEditorId);
-  await inputCol1.type(detailValue);
+  await page.focus(`#${detailEditorId}`)
+  await page.keyboard.type(detailValue)
   await sleep(100);
 }
 
@@ -114,12 +116,11 @@ describe("Html client", () => {
       `//div[@id='${masterDataViewId}']//div[${xPathContainsClass("addRow")}]`,
       { visible: true }
     );
-    let waitForRequests = catchRequests(page);
+
     await addRowToMaster("str11", "str12");
     await addRowToMaster("str21", "str22");
     await addRowToMaster("str31", "str32");
 
-    await waitForRequests;
     // await page.$eval("#saveButton", elem => elem .click())
     // await page.waitForSelector('#saveButton :not(.isRed)');
 
@@ -155,7 +156,6 @@ describe("Html client", () => {
       { visible: true }
     );
     await yesRowButton.click();
-    await waitForRequests;
 
     // await page.$eval("#saveButton", elem => elem .click())
     // await page.waitForSelector('#saveButton :not(.isRed)');
@@ -235,6 +235,5 @@ describe("Html client", () => {
 
     await refreshAndThrowChangesAway();
 
-    //await sleep(120 * 1000);
   });
 });

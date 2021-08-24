@@ -25,14 +25,16 @@ async function login(page) {
     `//input[@id='userNameInput']`,
     { visible: true }
   );
-  await userNameInput.type(userName);
+  // await userNameInput.type(userName);
+  await page.$eval(`#userNameInput`, (element, value) => element.value = value, userName);
   await sleep(200);
 
   const passwordInput = await page.waitForXPath(`//input[@id='passInput']`, {
     visible: true,
   });
-  await passwordInput.type(password);
-   await sleep(200);
+  // await passwordInput.type(password);
+  await page.$eval(`#passInput`, (element, value) => element.value = value, password);
+  await sleep(200);
 
   const loginButton = await page.waitForXPath(`//a[@id='loginButton']`, {
     visible: true,
@@ -79,6 +81,7 @@ async function getTableData(page, dataViewId, expectedRowCount){
       await page.evaluate(() => window.tableDebugMonitor = undefined);
       return tableData;
     }
+    console.log("tableData.rendered: "+tableData?.rendered + ", tableData.data.length: "+tableData?.data?.length)
     await sleep(evalDelayMs);
   }
   await page.evaluate(() => window.tableDebugMonitor = undefined);

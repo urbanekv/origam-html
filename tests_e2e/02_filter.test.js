@@ -62,7 +62,8 @@ async function setFilter(args){
   const filterValue = await page.evaluate(x => x.value, input);
   expect(filterValue).toBe("");
 
-  await input.type(args.value);
+  await page.focus(`#${inputId}`)
+  await page.keyboard.type(args.value)
 }
 
 async function setDateFilter(args){
@@ -93,7 +94,8 @@ async function setDateFilter(args){
     `#${inputId}`,
     {visible: true});
 
-  await input.type(args.value);
+  await page.focus(`#${inputId}`)
+  await page.keyboard.type(args.value)
 
   await removeFocusFromDateInput(input);
 }
@@ -115,6 +117,7 @@ async function removeFocusFromDateInput(toInput) {
 }
 
 async function clickParent(toInput) {
+  await sleep(200);
   let parent_node = await toInput.getProperty('parentNode')
   parent_node = await parent_node.getProperty('parentNode')
   parent_node = await parent_node.getProperty('parentNode')
@@ -145,7 +148,8 @@ async function setTwoFieldDateFilter(args){
     `#${fromInputId}`,
     {visible: true});
 
-  await fromInput.type(args.fromValue);
+  await page.focus(`#${fromInputId}`)
+  await page.keyboard.type(args.fromValue)
 
   await sleep(300);
 
@@ -153,9 +157,10 @@ async function setTwoFieldDateFilter(args){
     `#${toInputId}`,
     {visible: true});
 
-  await toInput.type(args.toValue);
+  await page.focus(`#${toInputId}`)
+  await page.keyboard.type(args.toValue)
 
-  await removeFocusFromDateInput(toInputId);
+  await removeFocusFromDateInput(toInput);
 }
 
 
@@ -184,7 +189,8 @@ async function setTwoFieldFilter(args){
   const fromFilterValue = await page.evaluate(x => x.value, fromInput);
   expect(fromFilterValue).toBe("");
 
-  await fromInput.type(args.fromValue);
+  await page.focus(`#${fromInputId}`)
+  await page.keyboard.type(args.fromValue)
 
   const toInput = await page.waitForSelector(
     `#${toInputId}`,
@@ -192,7 +198,8 @@ async function setTwoFieldFilter(args){
   const toFilterValue = await page.evaluate(x => x.value, toInput);
   expect(toFilterValue).toBe("");
 
-  await toInput.type(args.toValue);
+  await page.focus(`#${toInputId}`)
+  await page.keyboard.type(args.toValue)
 }
 
 const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
@@ -376,7 +383,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,8);
+    await waitForRowCount(page, dataViewId,10);
 
     await setTwoFieldFilter({
       propertyId: integer1PropertyId ,
@@ -385,7 +392,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,22);
+    await waitForRowCount(page, dataViewId,20);
 
       await setFilter({
         propertyId: integer1PropertyId ,
