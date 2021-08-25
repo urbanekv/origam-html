@@ -49,9 +49,12 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
   await page.focus(`#${firstColumnEditorId}`)
   await page.keyboard.type(firstColumnValue)
 
+  await sleep(200);
+  await page.focus(`#${firstColumnEditorId}`)
   await page.keyboard.press("Tab");
 
   await page.waitForFunction(`document.activeElement == document.getElementById("${secondColumnEditorId}")`);
+
   await page.focus(`#${secondColumnEditorId}`)
   await page.keyboard.type(secondColumnValue)
   await waitForRequests;
@@ -59,7 +62,7 @@ async function addRowToMaster(firstColumnValue, secondColumnValue) {
 }
 
 async function addRowToDetail(detailValue) {
-  await sleep(100);
+  await sleep(200);
   await page.$eval(`#${detailDataViewId} .addRow`, elem => elem.click());
   await page.waitForFunction(`document.activeElement == document.getElementById("${detailEditorId}")`);
   await sleep(100);

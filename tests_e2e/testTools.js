@@ -68,6 +68,18 @@ async function waitForRowCount(page, dataViewId, expectedRowCount){
   await getTableData(page, dataViewId, expectedRowCount)
 }
 
+async function waitForRowCountData(page, dataViewId, expectedRowCount) {
+  for (let i = 0; i < 200; i++) {
+    const countData = await getRowCountData(page, dataViewId)
+    console.log("countData.rowCount: "+ countData.rowCount);
+    if(countData.rowCount === expectedRowCount.toString()){
+      return countData;
+    }
+    await sleep(50);
+  }
+  throw new Error("Row count did not change before timeout");
+}
+
 async function getTableData(page, dataViewId, expectedRowCount){
   const modelInstanceId = dataViewId.substring(9);
   const timeoutMs = 10_000;
@@ -81,7 +93,6 @@ async function getTableData(page, dataViewId, expectedRowCount){
       await page.evaluate(() => window.tableDebugMonitor = undefined);
       return tableData;
     }
-    console.log("tableData.rendered: "+tableData?.rendered + ", tableData.data.length: "+tableData?.data?.length)
     await sleep(evalDelayMs);
   }
   await page.evaluate(() => window.tableDebugMonitor = undefined);
@@ -90,7 +101,7 @@ async function getTableData(page, dataViewId, expectedRowCount){
 }
 
 async function getRowCountData(page, dataViewId) {
-  const rowCountElement =  await page.waitForSelector(`#${dataViewId} .rowCount`);
+  const rowCountElement =  await page.waitForSelector(`#${dataViewId} .rowCount`,{visible: true});
   let rowCountText = await page.evaluate(x => x.textContent, rowCountElement);
   const rowCountData = rowCountText
     .split("/")
@@ -110,7 +121,6 @@ async function waitForRowSelected(page, dataViewId, rowNumber){
     if(rowCountData.selectedRow === rowNumber.toString()){
       return;
     }
-    console.log("rowCountData.selectedRow: "+rowCountData.selectedRow)
     await sleep(testDelayMs);
   }
   expect(rowCountData && rowCountData.selectedRow).toBe(rowNumber.toString());
@@ -136,19 +146,5 @@ function catchRequests(page, reqs = 0) {
   };
 }
 
-async function waitForRowCountToChange(page, dataViewId, initValue) {
-  await page.waitForSelector(
-    `#${dataViewId} .rowCount`,
-    {visible: true});
-  for (let i = 0; i < 100; i++) {
-    const countData = await getRowCountData(page, dataViewId)
-    if(countData.rowCount !== initValue.toString()){
-      return countData;
-    }
-    await sleep(200);
-  }
-  throw new Error("Row count did not change before timeout");
-}
-
-module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountToChange,
+module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountData,
   getTableData, waitForRowCount, catchRequests, waitForRowSelected};
