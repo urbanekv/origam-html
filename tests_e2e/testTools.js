@@ -65,21 +65,6 @@ function xPathContainsClass(className){
 }
 
 async function waitForRowCount(page, dataViewId, expectedRowCount){
-  await getTableData(page, dataViewId, expectedRowCount)
-}
-
-async function waitForRowCountData(page, dataViewId, expectedRowCount) {
-  for (let i = 0; i < 200; i++) {
-    const countData = await getRowCountData(page, dataViewId)
-    if(countData.rowCount === expectedRowCount.toString()){
-      return countData;
-    }
-    await sleep(50);
-  }
-  throw new Error("Row count did not change before timeout");
-}
-
-async function getTableData(page, dataViewId, expectedRowCount){
   const modelInstanceId = dataViewId.substring(9);
   const timeoutMs = 10_000;
   const evalDelayMs = 50;
@@ -97,6 +82,34 @@ async function getTableData(page, dataViewId, expectedRowCount){
   await page.evaluate(() => window.tableDebugMonitor = undefined);
   const rowCount = tableData ?  tableData.data.length : 0;
   expect(rowCount).toBe(expectedRowCount);
+}
+
+async function waitForRowCountData(page, dataViewId, expectedRowCount) {
+  for (let i = 0; i < 200; i++) {
+    const countData = await getRowCountData(page, dataViewId)
+    if(countData.rowCount === expectedRowCount.toString()){
+      return countData;
+    }
+    await sleep(50);
+  }
+  throw new Error("Row count did not change before timeout");
+}
+
+async function getTableData(page, dataViewId){
+  const modelInstanceId = dataViewId.substring(9);
+  const timeoutMs = 10_000;
+  const evalDelayMs = 50;
+  let tableData
+  for (let i = 0; i < timeoutMs / evalDelayMs; i++) {
+    tableData = await page.evaluate(
+      modelInstanceId => window.tableDebugMonitor && window.tableDebugMonitor[modelInstanceId],
+      modelInstanceId);
+    if(tableData && tableData.rendered){
+      await page.evaluate(() => window.tableDebugMonitor = undefined);
+      return tableData;
+    }
+    await sleep(evalDelayMs);
+  }
 }
 
 async function getRowCountData(page, dataViewId) {
