@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
-const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData, clickAndWaitFor
+const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitFor, clickAndWaitForXPath
 } = require('./testTools');
 
 let browser;
@@ -13,7 +13,7 @@ beforeEach(async () => {
     headless: false,
     defaultViewport: {
       width: 1024,
-      height: 2000, // to make all 30 lines visible and avoid the need for scrolling
+      height: 800, // to make all 30 lines visible and avoid the need for scrolling
     },
     // slowMo: 50,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -40,16 +40,19 @@ async function setFilter(args){
   const comboId = "combo_" +  args.propertyId;
   const dropdownId = "dropdown_combo_" + args.propertyId;
 
+  let waitForRequests = catchRequests(page);
   const text1FilterCombo = await page.waitForSelector(
     `#${comboId}`,
     { visible: true }
   );
-  await text1FilterCombo.click();
 
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
+  await sleep(200);
+
+  const optionDiv = await clickAndWaitForXPath({
+    page: page,
+    clickable: text1FilterCombo,
+    xPath: `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`
+  });
 
   await optionDiv.click();
 
@@ -64,12 +67,15 @@ async function setFilter(args){
 
   await page.focus(`#${inputId}`)
   await page.keyboard.type(args.value)
+  await waitForRequests;
 }
 
 async function openFilters(){
   const filterButton = await page.waitForSelector(
     `#${dataViewId} [class*='test-filter-button']`,
     {visible: true});
+
+  await sleep(300);
 
   await clickAndWaitFor({
     page: page,
@@ -78,12 +84,14 @@ async function openFilters(){
   });
 }
 
+
 async function setDateFilter(args){
   const inputId = "input_" + args.propertyId;
   const comboId = "combo_" +  args.propertyId;
   const dropdownId = "dropdown_combo_" + args.propertyId;
 
   await sleep(200);
+  let waitForRequests = catchRequests(page);
 
   const text1FilterCombo = await page.waitForSelector(
     `#${comboId}`,
@@ -91,12 +99,11 @@ async function setDateFilter(args){
   );
   await sleep(200);
 
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
+  const optionDiv = await clickAndWaitForXPath({
+    page: page,
+    clickable: text1FilterCombo,
+    xPath: `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`
+  });
 
   await optionDiv.click();
 
@@ -112,6 +119,7 @@ async function setDateFilter(args){
   await page.keyboard.type(args.value)
 
   await removeFocusFromDateInput(input);
+  await waitForRequests;
 }
 
 async function removeFocusFromDateInput(toInput) {
@@ -145,16 +153,17 @@ async function setTwoFieldDateFilter(args){
   const comboId = "combo_" + args.propertyId;
   const dropdownId = "dropdown_combo_" + args.propertyId;
 
+  let waitForRequests = catchRequests(page);
   const text1FilterCombo = await page.waitForSelector(
     `#${comboId}`,
     { visible: true }
   );
-  await text1FilterCombo.click();
 
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
+  const optionDiv = await clickAndWaitForXPath({
+    page: page,
+    clickable: text1FilterCombo,
+    xPath: `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
+  });
 
   await optionDiv.click();
 
@@ -175,6 +184,7 @@ async function setTwoFieldDateFilter(args){
   await page.keyboard.type(args.toValue)
 
   await removeFocusFromDateInput(toInput);
+  await waitForRequests;
 }
 
 
@@ -184,16 +194,18 @@ async function setTwoFieldFilter(args){
   const comboId = "combo_" + args.propertyId;
   const dropdownId = "dropdown_combo_" + args.propertyId;
 
+  let waitForRequests = catchRequests(page);
   const text1FilterCombo = await page.waitForSelector(
     `#${comboId}`,
     { visible: true }
   );
-  await text1FilterCombo.click();
+  await sleep(200);
 
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
+  const optionDiv = await clickAndWaitForXPath({
+    page: page,
+    clickable: text1FilterCombo,
+    xPath: `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`
+  });
 
   await optionDiv.click();
 
@@ -214,6 +226,7 @@ async function setTwoFieldFilter(args){
 
   await page.focus(`#${toInputId}`)
   await page.keyboard.type(args.toValue)
+  await waitForRequests;
 }
 
 const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
@@ -223,16 +236,16 @@ const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
 
 describe("Html client", () => {
-  it("Should perform basic text filter tests", async () => {
+  it("Should perform basic text filter tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
       ]);
 
-    await waitForRowCount(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
 
     await sleep(300);
 
@@ -246,7 +259,7 @@ describe("Html client", () => {
       value: "2"
     });
 
-    await waitForRowCount(page, dataViewId,12);
+    await waitForRowCountData(page, dataViewId,651);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -254,7 +267,7 @@ describe("Html client", () => {
       value: "txt3"
     })
 
-    await waitForRowCount(page, dataViewId,10);
+    await waitForRowCountData(page, dataViewId,110);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -262,7 +275,7 @@ describe("Html client", () => {
       value: "txt3"
     })
 
-    await waitForRowCount(page, dataViewId,20);
+    await waitForRowCountData(page, dataViewId,1989);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -270,7 +283,7 @@ describe("Html client", () => {
       value: "2"
     })
 
-    await waitForRowCount(page, dataViewId,18);
+    await waitForRowCountData(page, dataViewId,1448);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -278,7 +291,7 @@ describe("Html client", () => {
       value: "5"
     })
 
-    await waitForRowCount(page, dataViewId,3);
+    await waitForRowCountData(page, dataViewId,210);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -286,7 +299,7 @@ describe("Html client", () => {
       value: "5"
     })
 
-    await waitForRowCount(page, dataViewId,27);
+    await waitForRowCountData(page, dataViewId,1889);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -294,7 +307,7 @@ describe("Html client", () => {
       value: "txt25"
     })
 
-    await waitForRowCount(page, dataViewId,1);
+    await waitForRowCountData(page, dataViewId,1);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -302,7 +315,7 @@ describe("Html client", () => {
       value: "txt25"
     })
 
-    await waitForRowCount(page, dataViewId,29);
+    await waitForRowCountData(page, dataViewId,2098);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -310,7 +323,7 @@ describe("Html client", () => {
       value: undefined
     })
 
-    await waitForRowCount(page, dataViewId,0);
+    await waitForRowCountData(page, dataViewId,0);
 
     await setFilter({
       propertyId: text1PropertyId ,
@@ -318,18 +331,19 @@ describe("Html client", () => {
       value: undefined
     })
 
-    await waitForRowCount(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
   });
-  it("Should perform basic number filter tests", async () => {
+
+  it("Should perform basic number filter tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
       ]);
 
-    await waitForRowCount(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
 
     await sleep(300);
 
@@ -343,7 +357,7 @@ describe("Html client", () => {
       value: "20"
     })
 
-    await waitForRowCount(page, dataViewId,1);
+    await waitForRowCountData(page, dataViewId,1);
 
     await setFilter({
       propertyId: integer1PropertyId ,
@@ -351,7 +365,7 @@ describe("Html client", () => {
       value: "20"
     })
 
-    await waitForRowCount(page, dataViewId,29);
+    await waitForRowCountData(page, dataViewId,2098);
 
     await setFilter({
       propertyId: integer1PropertyId ,
@@ -359,7 +373,7 @@ describe("Html client", () => {
       value: "11"
     })
 
-    await waitForRowCount(page, dataViewId,11);
+    await waitForRowCountData(page, dataViewId,11);
 
     await setFilter({
       propertyId: integer1PropertyId ,
@@ -367,7 +381,7 @@ describe("Html client", () => {
       value: "11"
     })
 
-    await waitForRowCount(page, dataViewId,20);
+    await waitForRowCountData(page, dataViewId,2089);
 
     await setFilter({
       propertyId: integer1PropertyId ,
@@ -375,7 +389,7 @@ describe("Html client", () => {
       value: "11"
     })
 
-    await waitForRowCount(page, dataViewId,10);
+    await waitForRowCountData(page, dataViewId,10);
 
     await setFilter({
       propertyId: integer1PropertyId ,
@@ -383,7 +397,7 @@ describe("Html client", () => {
       value: "11"
     })
 
-    await waitForRowCount(page, dataViewId,19);
+    await waitForRowCountData(page, dataViewId,2088);
 
     await setTwoFieldFilter({
       propertyId: integer1PropertyId ,
@@ -392,7 +406,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,10);
+    await waitForRowCountData(page, dataViewId,10);
 
     await setTwoFieldFilter({
       propertyId: integer1PropertyId ,
@@ -401,7 +415,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,20);
+    await waitForRowCountData(page, dataViewId,2089);
 
       await setFilter({
         propertyId: integer1PropertyId ,
@@ -409,7 +423,7 @@ describe("Html client", () => {
         value: undefined
       })
 
-    await waitForRowCount(page, dataViewId,0);
+    await waitForRowCountData(page, dataViewId,0);
 
       await setFilter({
         propertyId: integer1PropertyId ,
@@ -417,18 +431,18 @@ describe("Html client", () => {
         value: undefined
       })
 
-    await waitForRowCount(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
   });
-  it("Should perform basic bool filter tests", async () => {
+  it("Should perform basic bool filter tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
       ]);
 
-    await waitForRowCount(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
 
     await sleep(300);
 
@@ -439,22 +453,22 @@ describe("Html client", () => {
     let boolFilterCheckBox = await page.waitForSelector(`#input_${boolean1PropertyId}`);
     await boolFilterCheckBox.click();
 
-    await waitForRowCount(page, dataViewId,1);
+    await waitForRowCountData(page, dataViewId,1);
 
     await boolFilterCheckBox.click();
 
-    await waitForRowCount(page, dataViewId,29);
+    await waitForRowCountData(page, dataViewId,2098);
   });
-  it("Should perform basic date filter tests", async () => {
+  it("Should perform basic date filter tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
       ]);
 
-    await waitForRowCountData(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
 
     await sleep(300);
 
@@ -473,7 +487,7 @@ describe("Html client", () => {
       comboOptionText: "≠",
       value: "03.07.2021"
     })
-    await waitForRowCountData(page, dataViewId,29);
+    await waitForRowCountData(page, dataViewId,2098);
 
     await setDateFilter({
       propertyId: date1PropertyId ,
@@ -489,7 +503,7 @@ describe("Html client", () => {
       value: "03.07.2021"
     })
 
-    await waitForRowCountData(page, dataViewId,20);
+    await waitForRowCountData(page, dataViewId,2089);
 
     await setDateFilter({
       propertyId: date1PropertyId ,
@@ -505,7 +519,7 @@ describe("Html client", () => {
       value: "03.07.2021"
     })
 
-    await waitForRowCountData(page, dataViewId,19);
+    await waitForRowCountData(page, dataViewId,2088);
 
     await setTwoFieldDateFilter({
       propertyId: date1PropertyId ,
@@ -523,7 +537,7 @@ describe("Html client", () => {
       toValue: "15.07.2021",
     })
 
-    await waitForRowCountData(page, dataViewId,17);
+    await waitForRowCountData(page, dataViewId,2086);
 
     await setDateFilter({
       propertyId: date1PropertyId ,
@@ -539,6 +553,6 @@ describe("Html client", () => {
       value: undefined
     })
 
-    await waitForRowCountData(page, dataViewId,30);
+    await waitForRowCountData(page, dataViewId,2099);
   });
 });

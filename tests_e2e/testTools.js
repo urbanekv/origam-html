@@ -71,7 +71,6 @@ async function waitForRowCount(page, dataViewId, expectedRowCount){
 async function waitForRowCountData(page, dataViewId, expectedRowCount) {
   for (let i = 0; i < 200; i++) {
     const countData = await getRowCountData(page, dataViewId)
-    console.log("countData.rowCount: "+ countData.rowCount);
     if(countData.rowCount === expectedRowCount.toString()){
       return countData;
     }
@@ -146,5 +145,35 @@ function catchRequests(page, reqs = 0) {
   };
 }
 
+async function clickAndWaitFor(args){
+  await args.clickable.click();
+  for (let i = 0; i < 3; i++) {
+    try{
+      return await args.page.waitForSelector(
+        args.id,
+        {visible: true, timeout: 3000}
+      )
+    }catch(TimeoutError){
+      await args.clickable.click();
+    }
+  }
+  throw Error(`${args.id} did not appear before timeout`);
+}
+
+async function clickAndWaitForXPath(args){
+  await args.clickable.click();
+  for (let i = 0; i < 3; i++) {
+    try{
+      return await args.page.waitForXPath(
+        args.xPath,
+        { visible: true, timeout: 3000 }
+      );
+    }catch(TimeoutError){
+      await args.clickable.click();
+    }
+  }
+  throw Error(`${args.xPath} did not appear before timeout`);
+}
+
 module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountData,
-  getTableData, waitForRowCount, catchRequests, waitForRowSelected};
+  getTableData, waitForRowCount, catchRequests, waitForRowSelected, clickAndWaitForXPath, clickAndWaitFor};
