@@ -131,6 +131,7 @@ class OpEditors extends React.Component<{
       case "nin":
         return (
           <FilterBuildDropdownEditor
+            id={this.props.id}
             lookup={this.props.lookup}
             property={this.props.property}
             getOptions={this.props.getOptions}
@@ -262,6 +263,7 @@ export function FilterBuildDropdownEditor(props: {
   onChange(selectedItems: Array<any>): void;
   values: Array<any>;
   autoFocus: boolean;
+  id?: string;
 }) {
   const mobxContext = useContext(MobXProviderContext);
 
@@ -348,6 +350,7 @@ export function FilterBuildDropdownEditor(props: {
       <DropdownEditor
         editor={
           <TagInputEditor
+            id={props.id}
             customInputClass={S.tagInput}
             value={value}
             isReadOnly={false}
