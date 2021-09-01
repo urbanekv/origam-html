@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
-const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitFor, clickAndWaitForXPath
+const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitFor, clickAndWaitForXPath,
+  typeAndWaitForSelector
 } = require('./testTools');
 
 let browser;
@@ -12,7 +13,7 @@ beforeEach(async () => {
     //devtools: true,
     headless: false,
     defaultViewport: {
-      width: 1024,
+      width: 1500,
       height: 800, // to make all 30 lines visible and avoid the need for scrolling
     },
     // slowMo: 50,
@@ -80,7 +81,7 @@ async function openFilters(){
   await clickAndWaitFor({
     page: page,
     clickable: filterButton,
-    id:`#input_${date1PropertyId}`
+    id:`input_${date1PropertyId}`
   });
 }
 
@@ -187,6 +188,51 @@ async function setTwoFieldDateFilter(args){
   await waitForRequests;
 }
 
+async function setComboFilter(args){
+  const inputId = "input_" + args.propertyId;
+  const comboId = "combo_" +  args.propertyId;
+  const dropdownId = "dropdown_combo_" + args.propertyId;
+
+  await sleep(200);
+
+  const text1FilterCombo = await page.waitForSelector(
+    `#${comboId}`,
+    { visible: true }
+  );
+  const optionDiv = await clickAndWaitForXPath({
+    page: page,
+    clickable: text1FilterCombo,
+    xPath: `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`
+  });
+
+  // await sleep(200);
+  //
+  // await text1FilterCombo.click();
+  //
+  // const optionDiv = await page.waitForXPath(
+  //   `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
+  //   { visible: true }
+  // );
+
+  await optionDiv.click();
+
+  if(args.value === undefined){
+    return;
+  }
+
+  await page.waitForSelector(
+    `#${inputId}`,
+    {visible: true});
+
+  const tagOptionDiv = await typeAndWaitForSelector({
+    page: page,
+    inputId: inputId,
+    selector: `div .cell.ord1.withCursor`,
+    value: args.value
+  });
+
+  await tagOptionDiv.click();
+}
 
 async function setTwoFieldFilter(args){
   const fromInputId = "from_input_" + args.propertyId;
@@ -234,6 +280,7 @@ const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
 const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
+const comboPropertyId ="14be2199-ad7f-43c3-83bf-a27c1fa66f7c";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests lazy loaded", async () => {
@@ -554,5 +601,85 @@ describe("Html client", () => {
     })
 
     await waitForRowCountData(page, dataViewId,2099);
+  });
+  it("Should perform basic combo input filter lazy loaded", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+      ]);
+
+    await waitForRowCountData(page, dataViewId,2099);
+
+    await sleep(300);
+
+    await openFilters();
+
+    await setComboFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "=",
+      value: "Label1"
+    })
+
+    await waitForRowCountData(page, dataViewId,2);
+
+    await setComboFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "≠",
+      value: "Label1"
+    })
+
+    await waitForRowCountData(page, dataViewId,2097);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "begins with",
+      value: "Lab"
+    })
+
+    await waitForRowCountData(page, dataViewId,6);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "not begins with",
+      value: "Lab"
+    })
+
+    await waitForRowCountData(page, dataViewId,2093);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "contains",
+      value: "Label2"
+    })
+
+    await waitForRowCountData(page, dataViewId,2);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "not contains",
+      value: "Label2"
+    })
+
+    await waitForRowCountData(page, dataViewId,2097);
+
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "is null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, dataViewId,2093);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "is not null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, dataViewId,6);
   });
 });

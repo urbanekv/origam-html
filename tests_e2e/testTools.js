@@ -158,6 +158,26 @@ function catchRequests(page, reqs = 0) {
   };
 }
 
+async function typeAndWaitForSelector(args){
+
+  await args.page.focus(`#${args.inputId}`)
+  await args.page.keyboard.type(args.value)
+
+  for (let i = 0; i < 3; i++) {
+    try{
+     return await args.page.waitForSelector(
+        args.selector,
+       {visible: true, timeout: 3000}
+      );
+
+    }catch(TimeoutError){
+      await args.page.focus(`#${args.inputId}`)
+      await args.page.keyboard.type(args.value)
+    }
+  }
+  throw Error(`${args.selector} did not appear before timeout`);
+}
+
 async function clickAndWaitFor(args){
   await args.clickable.click();
   for (let i = 0; i < 3; i++) {
@@ -189,4 +209,5 @@ async function clickAndWaitForXPath(args){
 }
 
 module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountData,
-  getTableData, waitForRowCount, catchRequests, waitForRowSelected, clickAndWaitForXPath, clickAndWaitFor};
+  getTableData, waitForRowCount, catchRequests, waitForRowSelected, clickAndWaitForXPath, clickAndWaitFor,
+  typeAndWaitForSelector};
