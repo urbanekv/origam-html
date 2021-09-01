@@ -163,7 +163,7 @@ async function clickAndWaitFor(args){
   for (let i = 0; i < 3; i++) {
     try{
       return await args.page.waitForSelector(
-        args.id,
+        `#${args.id}`,
         {visible: true, timeout: 3000}
       )
     }catch(TimeoutError){

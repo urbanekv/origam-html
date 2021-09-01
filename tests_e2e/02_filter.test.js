@@ -66,7 +66,7 @@ async function setFilter(args){
   await page.keyboard.type(args.value)
 }
 
-async function openFilters(){
+async function openFilters(dataViewId, propertyIdToWaitFor){
   const filterButton = await page.waitForSelector(
     `#${dataViewId} [class*='test-filter-button']`,
     {visible: true});
@@ -74,7 +74,7 @@ async function openFilters(){
   await clickAndWaitFor({
     page: page,
     clickable: filterButton,
-    id:`#input_${date1PropertyId}`
+    id:`input_${propertyIdToWaitFor}`
   });
 }
 
@@ -112,6 +112,47 @@ async function setDateFilter(args){
   await page.keyboard.type(args.value)
 
   await removeFocusFromDateInput(input);
+}
+
+async function setComboFilter(args){
+  const inputId = "input_" + args.propertyId;
+  const comboId = "combo_" +  args.propertyId;
+  const dropdownId = "dropdown_combo_" + args.propertyId;
+
+  await sleep(200);
+
+  const text1FilterCombo = await page.waitForSelector(
+    `#${comboId}`,
+    { visible: true }
+  );
+  await sleep(200);
+
+  await text1FilterCombo.click();
+
+  const optionDiv = await page.waitForXPath(
+    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
+    { visible: true }
+  );
+
+  await optionDiv.click();
+
+  if(args.value === undefined){
+    return;
+  }
+
+ await page.waitForSelector(
+    `#${inputId}`,
+    {visible: true});
+
+  await page.focus(`#${inputId}`)
+  await page.keyboard.type(args.value)
+
+  const tagOptionDiv = await page.waitForSelector(
+    `div .cell.ord1.withCursor`,
+    { visible: true }
+  );
+
+  await tagOptionDiv.click();
 }
 
 async function removeFocusFromDateInput(toInput) {
@@ -221,6 +262,7 @@ const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
 const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
+const comboPropertyId ="56f08e31-946b-40d0-976e-591ad1a8aa63";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests", async () => {
@@ -236,7 +278,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters(dataViewId, date1PropertyId);
 
     await sleep(300);
 
@@ -333,7 +375,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters(dataViewId, date1PropertyId);
 
     await sleep(300);
 
@@ -432,7 +474,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters(dataViewId, date1PropertyId);
 
     await sleep(300);
 
@@ -458,7 +500,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters(dataViewId, date1PropertyId);
 
     await setDateFilter({
       propertyId: date1PropertyId ,
@@ -541,4 +583,88 @@ describe("Html client", () => {
 
     await waitForRowCountData(page, dataViewId,30);
   });
+  it("Should perform basic tag input filter", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_1c71287d-5f60-496b-af4f-eb5cf19ffc0b",
+        "menu_0111ebdc-f5fe-4471-83ac-3956f595d177"
+      ]);
+
+    const tagInputDataViewId = "dataView_159f959d-a173-4974-a219-82e44ca95c8e";
+
+    await waitForRowCountData(page, tagInputDataViewId,2099);
+
+    await sleep(300);
+
+    await openFilters(tagInputDataViewId, comboPropertyId);
+
+    await setComboFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "=",
+      value: "txt35"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,413);
+
+    await setComboFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "≠",
+      value: "txt35"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,1686);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "begins with",
+      value: "txt2"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,420);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "not begins with",
+      value: "txt2"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,1679);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "contains",
+      value: "txt1"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,841);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "not contains",
+      value: "txt1"
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,1258);
+
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "is null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,0);
+
+    await setFilter({
+      propertyId: comboPropertyId ,
+      comboOptionText: "is not null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, tagInputDataViewId,2099);
+  });
 });
+
