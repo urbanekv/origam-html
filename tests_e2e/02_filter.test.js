@@ -66,7 +66,7 @@ async function setFilter(args){
   await page.keyboard.type(args.value)
 }
 
-async function openFilters(dataViewId, propertyIdToWaitFor){
+async function openFilters(){
   const filterButton = await page.waitForSelector(
     `#${dataViewId} [class*='test-filter-button']`,
     {visible: true});
@@ -74,7 +74,7 @@ async function openFilters(dataViewId, propertyIdToWaitFor){
   await clickAndWaitFor({
     page: page,
     clickable: filterButton,
-    id:`input_${propertyIdToWaitFor}`
+    id:`input_${date1PropertyId}`
   });
 }
 
@@ -262,7 +262,7 @@ const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
 const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
-const comboPropertyId ="56f08e31-946b-40d0-976e-591ad1a8aa63";
+const comboPropertyId ="14be2199-ad7f-43c3-83bf-a27c1fa66f7c";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests", async () => {
@@ -278,7 +278,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters(dataViewId, date1PropertyId);
+    await openFilters();
 
     await sleep(300);
 
@@ -375,7 +375,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters(dataViewId, date1PropertyId);
+    await openFilters();
 
     await sleep(300);
 
@@ -474,7 +474,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters(dataViewId, date1PropertyId);
+    await openFilters();
 
     await sleep(300);
 
@@ -500,7 +500,7 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters(dataViewId, date1PropertyId);
+    await openFilters();
 
     await setDateFilter({
       propertyId: date1PropertyId ,
@@ -583,71 +583,68 @@ describe("Html client", () => {
 
     await waitForRowCountData(page, dataViewId,30);
   });
-  it("Should perform basic tag input filter", async () => {
+  it("Should perform basic combo input filter", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
         "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_1c71287d-5f60-496b-af4f-eb5cf19ffc0b",
-        "menu_0111ebdc-f5fe-4471-83ac-3956f595d177"
+        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
       ]);
 
-    const tagInputDataViewId = "dataView_159f959d-a173-4974-a219-82e44ca95c8e";
-
-    await waitForRowCountData(page, tagInputDataViewId,2099);
+    await waitForRowCountData(page, dataViewId,30);
 
     await sleep(300);
 
-    await openFilters(tagInputDataViewId, comboPropertyId);
+    await openFilters();
 
     await setComboFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "=",
-      value: "txt35"
+      value: "Label1"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,413);
+    await waitForRowCountData(page, dataViewId,2);
 
     await setComboFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "≠",
-      value: "txt35"
+      value: "Label1"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,1686);
+    await waitForRowCountData(page, dataViewId,4);
 
     await setFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "begins with",
-      value: "txt2"
+      value: "Lab"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,420);
+    await waitForRowCountData(page, dataViewId,6);
 
     await setFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "not begins with",
-      value: "txt2"
+      value: "Lab"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,1679);
+    await waitForRowCountData(page, dataViewId,24);
 
     await setFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "contains",
-      value: "txt1"
+      value: "Label2"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,841);
+    await waitForRowCountData(page, dataViewId,2);
 
     await setFilter({
       propertyId: comboPropertyId ,
       comboOptionText: "not contains",
-      value: "txt1"
+      value: "Label2"
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,1258);
+    await waitForRowCountData(page, dataViewId,28);
 
 
     await setFilter({
@@ -656,7 +653,7 @@ describe("Html client", () => {
       value: undefined
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,0);
+    await waitForRowCountData(page, dataViewId,24);
 
     await setFilter({
       propertyId: comboPropertyId ,
@@ -664,7 +661,7 @@ describe("Html client", () => {
       value: undefined
     })
 
-    await waitForRowCountData(page, tagInputDataViewId,2099);
+    await waitForRowCountData(page, dataViewId,6);
   });
 });
 
