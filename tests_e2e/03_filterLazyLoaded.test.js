@@ -40,6 +40,7 @@ const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
 const boolean1PropertyId ="d63fbdbb-3bbc-43c9-a9f2-a8585c42bbae";
 const date1PropertyId ="c8e93248-81c0-4274-9ff1-1b7688944877";
 const comboPropertyId ="14be2199-ad7f-43c3-83bf-a27c1fa66f7c";
+const tagPropertyId ="3c685902-b55b-45cb-807c-01e8386bb313";
 
 describe("Html client", () => {
   it("Should perform basic text filter tests lazy loaded", async () => {
@@ -493,6 +494,61 @@ describe("Html client", () => {
     await setFilter({
       page: page,
       propertyId: comboPropertyId ,
+      comboOptionText: "is not null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, dataViewId,6);
+  });
+  it("Should perform basic tag input filter tests", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+      ]);
+
+    await waitForRowCountData(page, dataViewId,2099);
+
+    await sleep(300);
+
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
+
+    await setComboFilter({
+      page: page,
+      propertyId: tagPropertyId ,
+      comboOptionText: "=",
+      value: "Label1"
+    })
+
+    await waitForRowCountData(page, dataViewId,2);
+
+    await setComboFilter({
+      page: page,
+      propertyId: tagPropertyId ,
+      comboOptionText: "≠",
+      value: "Label1"
+    })
+
+    await waitForRowCountData(page, dataViewId,2097);
+
+    await setFilter({
+      page: page,
+      propertyId: tagPropertyId ,
+      comboOptionText: "is null",
+      value: undefined
+    })
+
+    await waitForRowCountData(page, dataViewId,2093);
+
+    await setFilter({
+      page: page,
+      propertyId: tagPropertyId ,
       comboOptionText: "is not null",
       value: undefined
     })
