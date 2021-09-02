@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
-const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData, clickAndWaitFor
-} = require('./testTools');
+const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData} = require('./testTools');
+const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
 
 let browser;
 let page;
@@ -35,228 +35,6 @@ afterEach(async () => {
 });
 
 
-async function setFilter(args){
-  const inputId = "input_" + args.propertyId;
-  const comboId = "combo_" +  args.propertyId;
-  const dropdownId = "dropdown_combo_" + args.propertyId;
-
-  const text1FilterCombo = await page.waitForSelector(
-    `#${comboId}`,
-    { visible: true }
-  );
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
-
-  await optionDiv.click();
-
-  if(args.value === undefined){
-    return;
-  }
-  const input = await page.waitForSelector(
-    `#${inputId}`,
-    {visible: true});
-  const filterValue = await page.evaluate(x => x.value, input);
-  expect(filterValue).toBe("");
-
-  await page.focus(`#${inputId}`)
-  await page.keyboard.type(args.value)
-}
-
-async function openFilters(){
-  const filterButton = await page.waitForSelector(
-    `#${dataViewId} [class*='test-filter-button']`,
-    {visible: true});
-
-  await clickAndWaitFor({
-    page: page,
-    clickable: filterButton,
-    id:`input_${date1PropertyId}`
-  });
-}
-
-async function setDateFilter(args){
-  const inputId = "input_" + args.propertyId;
-  const comboId = "combo_" +  args.propertyId;
-  const dropdownId = "dropdown_combo_" + args.propertyId;
-
-  await sleep(200);
-
-  const text1FilterCombo = await page.waitForSelector(
-    `#${comboId}`,
-    { visible: true }
-  );
-  await sleep(200);
-
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
-
-  await optionDiv.click();
-
-  if(args.value === undefined){
-    return;
-  }
-
-  const input = await page.waitForSelector(
-    `#${inputId}`,
-    {visible: true});
-
-  await page.focus(`#${inputId}`)
-  await page.keyboard.type(args.value)
-
-  await removeFocusFromDateInput(input);
-}
-
-async function setComboFilter(args){
-  const inputId = "input_" + args.propertyId;
-  const comboId = "combo_" +  args.propertyId;
-  const dropdownId = "dropdown_combo_" + args.propertyId;
-
-  await sleep(200);
-
-  const text1FilterCombo = await page.waitForSelector(
-    `#${comboId}`,
-    { visible: true }
-  );
-  await sleep(200);
-
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
-
-  await optionDiv.click();
-
-  if(args.value === undefined){
-    return;
-  }
-
- await page.waitForSelector(
-    `#${inputId}`,
-    {visible: true});
-
-  await page.focus(`#${inputId}`)
-  await page.keyboard.type(args.value)
-
-  const tagOptionDiv = await page.waitForSelector(
-    `div .cell.ord1.withCursor`,
-    { visible: true }
-  );
-
-  await tagOptionDiv.click();
-}
-
-async function removeFocusFromDateInput(toInput) {
-  await sleep(500);
-  await clickParent(toInput);
-  await sleep(300);
-
-  for (let i = 0; i < 5; i++) {
-    const inputIsActive = await page.evaluate(inputId =>`document.activeElement === document.getElementById("${inputId}")`, toInput);
-    if(inputIsActive){
-      await clickParent(toInput);
-      await sleep(300);
-    }else{
-      return;
-    }
-  }
-}
-
-async function clickParent(toInput) {
-  await sleep(200);
-  let parent_node = await toInput.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  parent_node = await parent_node.getProperty('parentNode')
-  await parent_node.click();
-}
-
-async function setTwoFieldDateFilter(args){
-  const fromInputId = "from_input_" + args.propertyId;
-  const toInputId = "to_input_" + args.propertyId;
-  const comboId = "combo_" + args.propertyId;
-  const dropdownId = "dropdown_combo_" + args.propertyId;
-
-  const text1FilterCombo = await page.waitForSelector(
-    `#${comboId}`,
-    { visible: true }
-  );
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
-
-  await optionDiv.click();
-
-  const fromInput = await page.waitForSelector(
-    `#${fromInputId}`,
-    {visible: true});
-
-  await page.focus(`#${fromInputId}`)
-  await page.keyboard.type(args.fromValue)
-
-  await sleep(300);
-
-  const toInput = await page.waitForSelector(
-    `#${toInputId}`,
-    {visible: true});
-
-  await page.focus(`#${toInputId}`)
-  await page.keyboard.type(args.toValue)
-
-  await removeFocusFromDateInput(toInput);
-}
-
-
-async function setTwoFieldFilter(args){
-  const fromInputId = "from_input_" + args.propertyId;
-  const toInputId = "to_input_" + args.propertyId;
-  const comboId = "combo_" + args.propertyId;
-  const dropdownId = "dropdown_combo_" + args.propertyId;
-
-  const text1FilterCombo = await page.waitForSelector(
-    `#${comboId}`,
-    { visible: true }
-  );
-  await text1FilterCombo.click();
-
-  const optionDiv = await page.waitForXPath(
-    `//div[@id='${dropdownId}']/div[text()='${args.comboOptionText}']`,
-    { visible: true }
-  );
-
-  await optionDiv.click();
-
-  const fromInput = await page.waitForSelector(
-    `#${fromInputId}`,
-    {visible: true});
-  const fromFilterValue = await page.evaluate(x => x.value, fromInput);
-  expect(fromFilterValue).toBe("");
-
-  await page.focus(`#${fromInputId}`)
-  await page.keyboard.type(args.fromValue)
-
-  const toInput = await page.waitForSelector(
-    `#${toInputId}`,
-    {visible: true});
-  const toFilterValue = await page.evaluate(x => x.value, toInput);
-  expect(toFilterValue).toBe("");
-
-  await page.focus(`#${toInputId}`)
-  await page.keyboard.type(args.toValue)
-}
-
 const dataViewId = "dataView_e67865b0-ce91-413c-bed7-1da486399633";
 const text1PropertyId = "cb584956-8f34-4d95-852e-eff4680a2673";
 const integer1PropertyId = "3f3f6be7-6e87-48d7-9ac1-89ac30dc43ce";
@@ -278,11 +56,16 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
 
     await sleep(300);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "contains",
       value: "2"
@@ -291,6 +74,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,12);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "begins with",
       value: "txt3"
@@ -299,6 +83,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,10);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "not begins with",
       value: "txt3"
@@ -307,6 +92,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,20);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "not contains",
       value: "2"
@@ -315,6 +101,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,18);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "ends with",
       value: "5"
@@ -323,6 +110,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,3);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "not ends with",
       value: "5"
@@ -331,6 +119,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,27);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "=",
       value: "txt25"
@@ -339,6 +128,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,1);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "≠",
       value: "txt25"
@@ -347,6 +137,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,29);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "is null",
       value: undefined
@@ -355,6 +146,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,0);
 
     await setFilter({
+      page: page,
       propertyId: text1PropertyId ,
       comboOptionText: "is not null",
       value: undefined
@@ -375,11 +167,16 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
 
     await sleep(300);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "=",
       value: "20"
@@ -388,6 +185,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,1);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "≠",
       value: "20"
@@ -396,6 +194,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,29);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "≤",
       value: "11"
@@ -404,6 +203,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,11);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "≥",
       value: "11"
@@ -412,6 +212,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,20);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "<",
       value: "11"
@@ -420,6 +221,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,10);
 
     await setFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: ">",
       value: "11"
@@ -428,6 +230,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,19);
 
     await setTwoFieldFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "between",
       fromValue: "5",
@@ -437,6 +240,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,10);
 
     await setTwoFieldFilter({
+      page: page,
       propertyId: integer1PropertyId ,
       comboOptionText: "not between",
       fromValue: "5",
@@ -446,6 +250,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,20);
 
       await setFilter({
+        page: page,
         propertyId: integer1PropertyId ,
         comboOptionText: "is null",
         value: undefined
@@ -454,6 +259,7 @@ describe("Html client", () => {
     await waitForRowCount(page, dataViewId,0);
 
       await setFilter({
+        page: page,
         propertyId: integer1PropertyId ,
         comboOptionText: "is not null",
         value: undefined
@@ -474,7 +280,11 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
 
     await sleep(300);
 
@@ -500,9 +310,14 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "=",
       value: "03.07.2021"
@@ -511,6 +326,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,1);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "≠",
       value: "03.07.2021"
@@ -518,6 +334,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,29);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "≤",
       value: "03.07.2021"
@@ -526,6 +343,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,11);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "≥",
       value: "03.07.2021"
@@ -534,6 +352,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,20);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "<",
       value: "03.07.2021"
@@ -542,6 +361,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,10);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: ">",
       value: "03.07.2021"
@@ -550,6 +370,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,19);
 
     await setTwoFieldDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "between",
       fromValue: "03.07.2021",
@@ -559,6 +380,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,13);
 
     await setTwoFieldDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "not between",
       fromValue: "03.07.2021",
@@ -568,6 +390,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,17);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "is null",
       value: undefined
@@ -576,6 +399,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,0);
 
     await setDateFilter({
+      page: page,
       propertyId: date1PropertyId ,
       comboOptionText: "is not null",
       value: undefined
@@ -596,9 +420,14 @@ describe("Html client", () => {
 
     await sleep(300);
 
-    await openFilters();
+    await openFilters({
+      page: page,
+      dataViewId: dataViewId,
+      aPropertyId: date1PropertyId
+    });
 
     await setComboFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "=",
       value: "Label1"
@@ -607,6 +436,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,2);
 
     await setComboFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "≠",
       value: "Label1"
@@ -615,6 +445,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,4);
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "begins with",
       value: "Lab"
@@ -623,6 +454,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,6);
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not begins with",
       value: "Lab"
@@ -631,6 +463,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,24);
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "contains",
       value: "Label2"
@@ -639,6 +472,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,2);
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not contains",
       value: "Label2"
@@ -648,6 +482,7 @@ describe("Html client", () => {
 
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "is null",
       value: undefined
@@ -656,6 +491,7 @@ describe("Html client", () => {
     await waitForRowCountData(page, dataViewId,24);
 
     await setFilter({
+      page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "is not null",
       value: undefined
