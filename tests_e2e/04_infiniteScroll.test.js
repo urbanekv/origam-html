@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
-const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitFor, clickAndWaitForXPath,
+const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitForXPath,
   getTableData
 } = require('./testTools');
 
@@ -82,7 +82,6 @@ describe("Html client", () => {
     await autoScroll(page, table);
 
     const tableData = await getTableData(page, dataViewId);
-    console.log(tableData)
     const rows = tableData.data
     const lastRow = rows[rows.length - 1]
     expect(lastRow["Text1"]).toBe("txt2109");

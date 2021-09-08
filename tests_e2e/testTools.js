@@ -131,7 +131,7 @@ async function waitForRowSelected(page, dataViewId, rowNumber){
   for (let i = 0; i < timeoutMs / testDelayMs ; i++) {
     rowCountData = await getRowCountData(page, dataViewId);
     if(rowCountData.selectedRow === rowNumber.toString()){
-      return;
+      return rowCountData;
     }
     await sleep(testDelayMs);
   }
@@ -178,19 +178,20 @@ async function typeAndWaitForSelector(args){
   throw Error(`${args.selector} did not appear before timeout`);
 }
 
-async function clickAndWaitFor(args){
+async function clickAndWaitForSelector(args){
   await args.clickable.click();
   for (let i = 0; i < 3; i++) {
     try{
       return await args.page.waitForSelector(
-        `#${args.id}`,
+        args.selector,
         {visible: true, timeout: 3000}
       )
-    }catch(TimeoutError){
+    }catch(error){
+      console.log(error);
       await args.clickable.click();
     }
   }
-  throw Error(`${args.id} did not appear before timeout`);
+  throw Error(`${args.selector} did not appear before timeout`);
 }
 
 async function clickAndWaitForXPath(args){
@@ -201,7 +202,8 @@ async function clickAndWaitForXPath(args){
         args.xPath,
         { visible: true, timeout: 3000 }
       );
-    }catch(TimeoutError){
+    }catch(error){
+      console.log(error);
       await args.clickable.click();
     }
   }
@@ -209,5 +211,5 @@ async function clickAndWaitForXPath(args){
 }
 
 module.exports = {sleep, xPathContainsClass, getImage, openMenuItem, login, getRowCountData, waitForRowCountData,
-  getTableData, waitForRowCount, catchRequests, waitForRowSelected, clickAndWaitForXPath, clickAndWaitFor,
+  getTableData, waitForRowCount, catchRequests, waitForRowSelected, clickAndWaitForXPath, clickAndWaitForSelector,
   typeAndWaitForSelector};
