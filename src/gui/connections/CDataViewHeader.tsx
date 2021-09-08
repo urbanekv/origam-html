@@ -457,6 +457,7 @@ export class CDataViewHeaderInner extends React.Component<{
                           <Dropdowner
                             trigger={({ refTrigger, setDropped }) => (
                               <DataViewHeaderAction
+                                className={"threeDotMenu"}
                                 refDom={refTrigger}
                                 onMouseDown={() => setDropped(true)}
                                 isActive={false}
@@ -478,6 +479,7 @@ export class CDataViewHeaderInner extends React.Component<{
                                   {T("Export to Excel", "excel_tool_tip")}
                                 </DropdownItem>
                                 <DropdownItem
+                                  id={"columnConfigItem"}
                                   onClick={(event: any) => {
                                     setDropped(false);
                                     onColumnConfigurationClickEvt(event);
