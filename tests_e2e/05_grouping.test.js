@@ -179,4 +179,54 @@ describe("Html client", () => {
 
     await waitForRowCount(page, dataViewId, 30);
   })
+  it("Should perform groping tests lazy loaded", async () => {
+    await login(page);
+    await openMenuItem(
+      page,
+      [
+        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
+        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+      ]);
+
+    let waitForRequests = catchRequests(page);
+    await waitForRowCountData(page, dataViewId, 2099);
+
+    await setGrouping();
+
+    await waitForRequests;
+    await sleep(1000);
+
+    const rowHeight = 30;
+    const tableArea = await page.$(`#${dataViewId}  [class*='Table_cellAreaContainer']`);
+    const box = await tableArea.boundingBox();
+    console.log(box)
+
+    // open first group on the first level
+    await page.mouse.click(
+      box.x + rowHeight / 2,
+      box.y + rowHeight / 2
+    );
+
+    await sleep(1000);
+
+    // open second group on the second level
+    await page.mouse.click(
+      box.x + rowHeight,
+      box.y + rowHeight * 2
+    );
+    await sleep(1000);
+
+    // select first row in the open group
+    await page.mouse.click(
+      box.x + rowHeight * 2,
+      box.y + rowHeight * 3
+    );
+
+    const rowData = await waitForRowSelected(page, dataViewId, 1);
+    expect(rowData && rowData.rowCount).toBe( '2 (2099)');
+
+    await clearGrouping()
+
+    await waitForRowCountData(page, dataViewId, 2099);
+  })
 });
