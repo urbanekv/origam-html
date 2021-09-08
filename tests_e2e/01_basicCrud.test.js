@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl, password} = require('./additionalConfig');
 const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, waitForRowCount, catchRequests} = require('./testTools');
+const {widgetsMenuItemId, sectionsMenuItemId, masterDerailMenuItemId} = require("./modelIds");
 
 let browser;
 let page;
@@ -109,9 +110,9 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_691f8dfa-606f-46f3-9078-6891642af76e",
-        "menu_12bef472-a744-4f5a-98f8-17c163137e9f"
+        widgetsMenuItemId,
+        sectionsMenuItemId,
+        masterDerailMenuItemId,
       ]);
 
     // Add three rows
@@ -200,9 +201,9 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_691f8dfa-606f-46f3-9078-6891642af76e",
-        "menu_12bef472-a744-4f5a-98f8-17c163137e9f"
+        widgetsMenuItemId,
+        sectionsMenuItemId,
+        masterDerailMenuItemId,
       ]);
     // Add rows to master
     await page.waitForXPath(

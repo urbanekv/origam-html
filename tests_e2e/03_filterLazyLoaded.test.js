@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCountData } = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
+const {widgetsMenuItemId, allDataTypesLazyMenuItemsId} = require("./modelIds");
 
 let browser;
 let page;
@@ -48,8 +49,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);
@@ -160,8 +161,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);
@@ -273,8 +274,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);
@@ -303,8 +304,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);
@@ -413,8 +414,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);
@@ -505,8 +506,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     await waitForRowCountData(page, dataViewId,2099);

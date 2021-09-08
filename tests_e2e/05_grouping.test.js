@@ -5,6 +5,7 @@ const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData, clickA
 } = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
 const {installMouseHelper} = require('./instalMouseHelper_');
+const {widgetsMenuItemId, allDataTypesMenuId, allDataTypesLazyMenuItemsId} = require("./modelIds");
 
 let browser;
 let page;
@@ -134,8 +135,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     let waitForRequests = catchRequests(page);
@@ -184,8 +185,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_30322a63-f242-45d5-a3ff-adaa3e4cb28a"
+        widgetsMenuItemId,
+        allDataTypesLazyMenuItemsId
       ]);
 
     let waitForRequests = catchRequests(page);

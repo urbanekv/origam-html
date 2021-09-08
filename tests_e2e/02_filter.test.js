@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData} = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
+const {widgetsMenuItemId, allDataTypesMenuId} = require("./modelIds");
 
 let browser;
 let page;
@@ -49,8 +50,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCount(page, dataViewId,30);
@@ -160,8 +161,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCount(page, dataViewId,30);
@@ -273,8 +274,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCount(page, dataViewId,30);
@@ -303,8 +304,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCountData(page, dataViewId,30);
@@ -413,8 +414,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCountData(page, dataViewId,30);
@@ -504,8 +505,8 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
-        "menu_12580c7d-8b0f-4541-8250-dd337443eaca",
-        "menu_423a08e5-b1cf-4341-a342-d9b57667d1b9"
+        widgetsMenuItemId,
+        allDataTypesMenuId
       ]);
 
     await waitForRowCountData(page, dataViewId,30);
