@@ -5,7 +5,7 @@ const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData, clickA
 } = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
 const {installMouseHelper} = require('./instalMouseHelper_');
-const {widgetsMenuItemId, allDataTypesMenuId, allDataTypesLazyMenuItemsId} = require("./modelIds");
+const {widgetsMenuItemId, allDataTypesMenuId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
 
 let browser;
 let page;
@@ -135,6 +135,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -176,15 +177,19 @@ describe("Html client", () => {
     const rowData = await waitForRowSelected(page, dataViewId, 1);
     expect(rowData && rowData.rowCount).toBe( '2 (30)');
 
+    waitForRequests = catchRequests(page);
     await clearGrouping()
 
     await waitForRowCount(page, dataViewId, 30);
+    await waitForRequests;
+    await sleep(1000);
   })
   it("Should perform groping tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);

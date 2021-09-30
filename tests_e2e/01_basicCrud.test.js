@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const { backEndUrl, password} = require('./additionalConfig');
 const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, waitForRowCount, catchRequests} = require('./testTools');
-const {widgetsMenuItemId, sectionsMenuItemId, masterDerailMenuItemId} = require("./modelIds");
+const {widgetsMenuItemId, sectionsMenuItemId, masterDerailMenuItemId, topMenuHeader} = require("./modelIds");
 
 let browser;
 let page;
@@ -110,6 +110,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         sectionsMenuItemId,
         masterDerailMenuItemId,
@@ -201,6 +202,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         sectionsMenuItemId,
         masterDerailMenuItemId,

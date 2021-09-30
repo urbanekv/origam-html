@@ -3,7 +3,7 @@ const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAndWaitForXPath,
   getTableData
 } = require('./testTools');
-const {widgetsMenuItemId, allDataTypesLazyMenuItemsId} = require("./modelIds");
+const {widgetsMenuItemId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
 
 let browser;
 let page;
@@ -65,6 +65,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);

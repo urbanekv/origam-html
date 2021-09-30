@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCountData } = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
-const {widgetsMenuItemId, allDataTypesLazyMenuItemsId} = require("./modelIds");
+const {widgetsMenuItemId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
 
 let browser;
 let page;
@@ -49,6 +49,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -161,6 +162,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -274,6 +276,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -304,6 +307,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -414,6 +418,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -501,11 +506,12 @@ describe("Html client", () => {
 
     await waitForRowCountData(page, dataViewId,6);
   });
-  it("Should perform basic tag input filter tests", async () => {
+  it("Should perform basic tag input filter tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesLazyMenuItemsId
       ]);
@@ -533,7 +539,6 @@ describe("Html client", () => {
       page: page,
       propertyId: tagPropertyId ,
       comboOptionText: "≠",
-      value: "Label1"
     })
 
     await waitForRowCountData(page, dataViewId,2097);

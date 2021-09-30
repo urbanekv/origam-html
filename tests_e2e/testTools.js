@@ -3,36 +3,16 @@ const {userName, password} = require("./additionalConfig");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function login(page) {
-
-  // const languageLink = await page.waitForXPath(
-  //   `//a[@value='en-US']`,
-  //   { visible: true }
-  // );
-  //
-  // const languageLinkClass = await (await languageLink.getProperty('className')).jsonValue();
-  //
-  // if(languageLinkClass.indexOf("inactiveLanguageLink") === -1){
-  //   await languageLink.click();
-  //   await page.waitForNavigation({waitUntil: "load"});
-  //   const englishLogin = await page.waitForXPath(
-  //     `//a[text()='Login']`,
-  //     { visible: true }
-  //   );
-  //   await sleep(100);
-  // }
-
-  const userNameInput = await page.waitForXPath(
+    const userNameInput = await page.waitForXPath(
     `//input[@id='userNameInput']`,
     { visible: true }
   );
-  // await userNameInput.type(userName);
   await page.$eval(`#userNameInput`, (element, value) => element.value = value, userName);
   await sleep(200);
 
   const passwordInput = await page.waitForXPath(`//input[@id='passInput']`, {
     visible: true,
   });
-  // await passwordInput.type(password);
   await page.$eval(`#passInput`, (element, value) => element.value = value, password);
   await sleep(200);
 
@@ -46,9 +26,10 @@ async function login(page) {
 async function openMenuItem(page, menuItemIdList) {
   for (const menuItemId of menuItemIdList) {
     const menuItem = await page.waitForXPath(
-      `//div[@id='${menuItemId}']`,
+      `//*[@id='${menuItemId}']`,
       {visible: true}
     );
+    await sleep(100);
     await menuItem.click();
   }
 }
@@ -171,10 +152,13 @@ async function typeAndWaitForSelector(args){
       );
 
     }catch(TimeoutError){
+      console.log(TimeoutError)
+      await sleep(30000);
       await args.page.focus(`#${args.inputId}`)
       await args.page.keyboard.type(args.value)
     }
   }
+  await sleep(30000);
   throw Error(`${args.selector} did not appear before timeout`);
 }
 

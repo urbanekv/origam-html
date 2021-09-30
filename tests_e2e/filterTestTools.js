@@ -1,4 +1,4 @@
-const {sleep, catchRequests, clickAndWaitForXPath, typeAndWaitForSelector, clickAndWaitFor} = require("./testTools");
+const {sleep, catchRequests, clickAndWaitForXPath, typeAndWaitForSelector, clickAndWaitForSelector} = require("./testTools");
 
 async function removeFocusFromDateInput(page, toInput) {
   await sleep(500);
@@ -129,6 +129,8 @@ async function setFilter(args){
   const input = await args.page.waitForSelector(
     `#${inputId}`,
     {visible: true});
+
+  await args.page.evaluate(x => x.value = "", input);
   const filterValue = await args.page.evaluate(x => x.value, input);
   expect(filterValue).toBe("");
 
@@ -161,6 +163,7 @@ async function setTwoFieldFilter(args){
   const fromInput = await args.page.waitForSelector(
     `#${fromInputId}`,
     {visible: true});
+  await args.page.evaluate(x => x.value = "", fromInput);
   const fromFilterValue = await args.page.evaluate(x => x.value, fromInput);
   expect(fromFilterValue).toBe("");
 
@@ -170,6 +173,7 @@ async function setTwoFieldFilter(args){
   const toInput = await args.page.waitForSelector(
     `#${toInputId}`,
     {visible: true});
+  await args.page.evaluate(x => x.value = "", toInput);
   const toFilterValue = await args.page.evaluate(x => x.value, toInput);
   expect(toFilterValue).toBe("");
 
@@ -222,10 +226,10 @@ async function openFilters(args){
 
   await sleep(300);
 
-  await clickAndWaitFor({
+  await clickAndWaitForSelector({
     page: args.page,
     clickable: filterButton,
-    id:`input_${args.aPropertyId}`
+    selector:`#input_${args.aPropertyId}`
   });
 }
 

@@ -134,6 +134,7 @@ export class CMainMenu extends React.Component<{
           onMouseLeave={() => this.mouseInHeader = false}
         >
           <SidebarSectionHeader
+            id={"menuHeader"}
             isActive={this.props.isActive}
             icon={<Icon src="./icons/menu.svg" tooltip={T("Menu", "menu")} />}
             label={T("Menu", "menu")}

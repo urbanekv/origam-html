@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData} = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
-const {widgetsMenuItemId, allDataTypesMenuId} = require("./modelIds");
+const {widgetsMenuItemId, allDataTypesMenuId, topMenuHeader} = require("./modelIds");
 
 let browser;
 let page;
@@ -29,7 +29,11 @@ beforeEach(async () => {
 
 afterEach(async () => {
   let pages = await browser.pages();
-  await Promise.all(pages.map(page =>page.close()));
+  try{
+    await Promise.all(pages.map(page =>page.close()));
+  }catch(e){
+    console.warn(e);
+  }
   await sleep(200);
   await browser?.close();
   browser = undefined;
@@ -50,6 +54,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -161,6 +166,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -239,7 +245,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,10);
+    await waitForRowCount(page, dataViewId,9);
 
     await setTwoFieldFilter({
       page: page,
@@ -249,7 +255,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCount(page, dataViewId,20);
+    await waitForRowCount(page, dataViewId,21);
 
       await setFilter({
         page: page,
@@ -274,6 +280,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -304,6 +311,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -414,6 +422,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -441,7 +450,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "≠",
-      value: "Label1"
     })
 
     await waitForRowCountData(page, dataViewId,4);
@@ -459,7 +467,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not begins with",
-      value: "Lab"
     })
 
     await waitForRowCountData(page, dataViewId,24);
@@ -477,7 +484,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not contains",
-      value: "Label2"
     })
 
     await waitForRowCountData(page, dataViewId,28);
@@ -505,6 +511,7 @@ describe("Html client", () => {
     await openMenuItem(
       page,
       [
+        topMenuHeader,
         widgetsMenuItemId,
         allDataTypesMenuId
       ]);
@@ -532,7 +539,6 @@ describe("Html client", () => {
       page: page,
       propertyId: tagPropertyId ,
       comboOptionText: "≠",
-      value: "Label1"
     })
 
     await waitForRowCountData(page, dataViewId,28);
