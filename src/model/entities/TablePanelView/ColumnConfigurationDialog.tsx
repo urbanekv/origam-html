@@ -55,7 +55,7 @@ export class ColumnConfigurationDialog implements IColumnConfigurationDialog {
         property.id,
         {
           canGroup: groupingOnClient ||
-            (!property.isAggregatedColumn && property.column !== "TagInput"),
+            (!property.isAggregatedColumn && property.fieldType !== "DetachedField"),
           canAggregate: groupingOnClient ||
             (!property.isAggregatedColumn && !property.isLookupColumn && property.column !== "TagInput"),
           entity: property.entity,

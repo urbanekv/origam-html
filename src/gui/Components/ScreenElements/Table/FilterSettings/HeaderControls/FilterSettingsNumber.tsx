@@ -161,10 +161,12 @@ export class FilterSettingsNumber extends React.Component<{
 
   @action.bound
   handleFilterTypeChange() {
-    this.currentValue1 = "";
-    this.currentValue2 = "";
-    this.props.setting.val1 = undefined;
-    this.props.setting.val2 = undefined;
+    if(this.props.setting.type === "null" || this.props.setting.type === "nnull") {
+      this.currentValue1 = "";
+      this.currentValue2 = "";
+      this.props.setting.val1 = undefined;
+      this.props.setting.val2 = undefined;
+    }
     this.handleSettingChange();
   }
 
