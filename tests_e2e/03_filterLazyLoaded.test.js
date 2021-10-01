@@ -241,7 +241,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCountData(page, dataViewId,10);
+    await waitForRowCountData(page, dataViewId,9);
 
     await setTwoFieldFilter({
       page: page,
@@ -251,7 +251,7 @@ describe("Html client", () => {
       toValue: "14",
     })
 
-    await waitForRowCountData(page, dataViewId,2089);
+    await waitForRowCountData(page, dataViewId,2090);
 
     await setFilter({
       page: page,
@@ -446,7 +446,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "≠",
-      value: "Label1"
     })
 
     await waitForRowCountData(page, dataViewId,2097);
@@ -464,7 +463,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not begins with",
-      value: "Lab"
     })
 
     await waitForRowCountData(page, dataViewId,2093);
@@ -482,7 +480,6 @@ describe("Html client", () => {
       page: page,
       propertyId: comboPropertyId ,
       comboOptionText: "not contains",
-      value: "Label2"
     })
 
     await waitForRowCountData(page, dataViewId,2097);

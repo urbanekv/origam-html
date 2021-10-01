@@ -49,7 +49,7 @@ const comboPropertyId ="14be2199-ad7f-43c3-83bf-a27c1fa66f7c";
 const tagPropertyId ="3c685902-b55b-45cb-807c-01e8386bb313";
 
 describe("Html client", () => {
-  it("Should perform basic text filter tests", async () => {
+  it("Should perform basic text filter tests1", async () => {
     await login(page);
     await openMenuItem(
       page,

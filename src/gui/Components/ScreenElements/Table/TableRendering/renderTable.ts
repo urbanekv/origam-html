@@ -96,6 +96,7 @@ export function renderTable(
   mouseMoveSubscriptions.set(aMouseMoveSubscriptions);
   mouseOverSubscriptions.set(aMouseOverSubscriptions);
   try {
+    clearTableDebugValues(context());
     clickSubscriptions().length = 0;
     mouseOverSubscriptions().length = 0;
     mouseMoveSubscriptions().length = 0;
