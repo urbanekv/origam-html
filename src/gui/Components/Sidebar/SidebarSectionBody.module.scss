@@ -1,6 +1,6 @@
 .root {
   flex-grow: 0;
-  overflow: hidden;
+  overflow: auto;
   height: 0;
   &:global(.isActive) {
     flex-grow: 1;
