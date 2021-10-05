@@ -1,10 +1,15 @@
 const puppeteer = require("puppeteer");
-const { backEndUrl, password} = require('./additionalConfig');
-const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, waitForRowCount, catchRequests} = require('./testTools');
+const { backEndUrl} = require('./additionalConfig');
+const { sleep, xPathContainsClass, openMenuItem, login, getRowCountData, catchRequests} = require('./testTools');
 const {widgetsMenuItemId, sectionsMenuItemId, masterDerailMenuItemId, topMenuHeader} = require("./modelIds");
+const { restoreWidgetSectionTestMaster} = require("./dbTools");
 
 let browser;
 let page;
+
+beforeAll(async() => {
+  await restoreWidgetSectionTestMaster();
+});
 
 beforeEach(async () => {
   browser = await puppeteer.launch({

@@ -6,9 +6,14 @@ const { sleep, openMenuItem, login, waitForRowCount, waitForRowCountData, clickA
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
 const {installMouseHelper} = require('./instalMouseHelper_');
 const {widgetsMenuItemId, allDataTypesMenuId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
+const {restoreAllDataTypesTable} = require("./dbTools");
 
 let browser;
 let page;
+
+beforeAll(async() => {
+  await restoreAllDataTypesTable();
+});
 
 beforeEach(async () => {
   browser = await puppeteer.launch({

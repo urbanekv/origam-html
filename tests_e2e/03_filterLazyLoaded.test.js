@@ -3,9 +3,14 @@ const { backEndUrl } = require('./additionalConfig');
 const { sleep, openMenuItem, login, waitForRowCountData } = require('./testTools');
 const {setDateFilter, setTwoFieldDateFilter, setFilter, setTwoFieldFilter, setComboFilter, openFilters} = require("./filterTestTools");
 const {widgetsMenuItemId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
+const {restoreAllDataTypesTable} = require("./dbTools");
 
 let browser;
 let page;
+
+beforeAll(async() => {
+  await restoreAllDataTypesTable();
+});
 
 beforeEach(async () => {
   browser = await puppeteer.launch({

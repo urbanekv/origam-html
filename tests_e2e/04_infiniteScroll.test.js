@@ -4,9 +4,14 @@ const { sleep, openMenuItem, login, waitForRowCountData, catchRequests, clickAnd
   getTableData
 } = require('./testTools');
 const {widgetsMenuItemId, allDataTypesLazyMenuItemsId, topMenuHeader} = require("./modelIds");
+const {restoreAllDataTypesTable} = require("./dbTools");
 
 let browser;
 let page;
+
+beforeAll(async() => {
+  await restoreAllDataTypesTable();
+});
 
 beforeEach(async () => {
   browser = await puppeteer.launch({
