@@ -135,7 +135,7 @@ async function clearGrouping() {
 }
 
 describe("Html client", () => {
-  it("Should perform groping tests", async () => {
+  it("Should perform grouping tests", async () => {
     await login(page);
     await openMenuItem(
       page,
@@ -189,7 +189,7 @@ describe("Html client", () => {
     await waitForRequests;
     await sleep(1000);
   })
-  it("Should perform groping tests lazy loaded", async () => {
+  it("Should perform grouping tests lazy loaded", async () => {
     await login(page);
     await openMenuItem(
       page,
